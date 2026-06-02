@@ -36,7 +36,7 @@ export default function StadiumDetail({ stadium }: { stadium: Stadium | null }) 
           <div className="rounded-lg bg-secondary p-3">
             <div className="text-xs text-muted-foreground">Capacity</div>
             <div className="mt-1 flex items-center gap-2 text-lg font-bold text-primary">
-              <Users size={18} className="text-accent" />
+              <User size={18} className="text-accent" />
               {stadium.capacity.toLocaleString()}
             </div>
           </div>
