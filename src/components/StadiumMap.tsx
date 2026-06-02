@@ -45,6 +45,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
       center: [-95, 40],
       zoom: 3,
       ui: { components: ["zoom"] },
+      popupEnabled: false,
     });
     view.ui.add(new Home({ view }), "top-left");
 
@@ -55,15 +56,6 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
         geometry: new Point({ longitude: s.longitude, latitude: s.latitude }),
         symbol: defaultSym.clone(),
         attributes: { ...s },
-        popupTemplate: {
-          title: "{name}",
-          content: `
-            <div style="font-family:Arial,sans-serif">
-              <img src="${s.imageUrl}" style="width:100%;border-radius:6px;margin-bottom:8px"/>
-              <div style="color:#1C4E8A;font-weight:600">${s.city}, ${s.country}</div>
-              <div style="margin-top:6px">🏆 Capacity: <b>${s.capacity.toLocaleString()}</b></div>
-            </div>`,
-        },
       });
       layer.add(g);
     });
