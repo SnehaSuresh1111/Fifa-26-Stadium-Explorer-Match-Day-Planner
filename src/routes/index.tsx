@@ -38,23 +38,25 @@ function Index() {
   };
 
   return (
-    <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-background lg:flex-row">
-      <header className="absolute left-0 right-0 top-0 z-20 flex items-center justify-between gap-3 bg-primary/95 px-4 py-3 text-primary-foreground backdrop-blur lg:right-[380px]">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🌍</span>
+    <div className="relative flex h-screen w-screen flex-col overflow-hidden lg:flex-row">
+      <header className="absolute left-3 right-3 top-3 z-20 flex items-center justify-between gap-3 rounded-3xl glass px-4 py-3 shadow-soft lg:right-[396px]">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-primary text-lg shadow-glow">
+            🌍
+          </div>
           <div>
-            <h1 className="text-sm font-bold leading-tight sm:text-base">FIFA World Cup 2026</h1>
-            <p className="text-[10px] uppercase tracking-wider opacity-80 sm:text-xs">Stadium Explorer</p>
+            <h1 className="text-sm font-bold leading-tight sm:text-base text-gradient-primary">FIFA World Cup 2026</h1>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:text-xs">Stadium Explorer</p>
           </div>
         </div>
         <select
           value={selected?.city ?? ""}
           onChange={(e) => onCityChange(e.target.value)}
-          className="max-w-[55%] truncate rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-primary-foreground outline-none focus:bg-white/20"
+          className="max-w-[55%] truncate rounded-2xl border border-white/40 bg-white/60 px-3 py-2 text-sm font-medium text-foreground outline-none transition focus:border-primary/60 focus:bg-white/90 focus:ring-2 focus:ring-primary/30"
         >
-          <option value="" disabled className="text-foreground">Jump to city…</option>
+          <option value="" disabled>Jump to city…</option>
           {cities.map((c) => (
-            <option key={c} value={c} className="text-foreground">{c}</option>
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
       </header>
@@ -70,9 +72,10 @@ function Index() {
       </main>
 
       {/* Desktop side panel */}
-      <aside className="hidden h-full w-[380px] shrink-0 overflow-y-auto border-l border-border bg-card shadow-xl lg:block">
-        <div className="h-[60px]" />
-        <StadiumDetail stadium={selected} />
+      <aside className="hidden h-full w-[392px] shrink-0 p-3 lg:block">
+        <div className="h-full overflow-y-auto rounded-3xl glass shadow-glow">
+          <StadiumDetail stadium={selected} />
+        </div>
       </aside>
     </div>
   );
