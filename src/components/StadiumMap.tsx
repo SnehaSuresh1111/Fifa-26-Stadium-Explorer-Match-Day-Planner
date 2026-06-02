@@ -44,7 +44,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
       map,
       center: [-95, 40],
       zoom: 3,
-      ui: { components: ["zoom", "attribution"] },
+      ui: { components: ["zoom"] },
     });
     view.ui.add(new Home({ view }), "top-left");
 
