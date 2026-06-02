@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { cities, stadiums, type Stadium } from "@/data/stadiums";
 import StadiumDetail from "@/components/StadiumDetail";
 
@@ -21,6 +21,8 @@ function Index() {
   const [selected, setSelected] = useState<Stadium | null>(null);
   const [flyToCity, setFlyToCity] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const onSelect = (s: Stadium) => {
     setSelected(s);
@@ -61,9 +63,13 @@ function Index() {
       </header>
 
       <main className="relative flex-1">
-        <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>}>
-          <StadiumMap selectedId={selected?.id ?? null} onSelect={onSelect} flyToCity={flyToCity} />
-        </Suspense>
+        {mounted ? (
+          <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>}>
+            <StadiumMap selectedId={selected?.id ?? null} onSelect={onSelect} flyToCity={flyToCity} />
+          </Suspense>
+        ) : (
+          <div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>
+        )}
       </main>
 
       {/* Desktop side panel */}
