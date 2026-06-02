@@ -1,3 +1,4 @@
+import { Users } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 
 export default function StadiumDetail({ stadium }: { stadium: Stadium | null }) {
