@@ -20,13 +20,11 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [selected, setSelected] = useState<Stadium | null>(null);
   const [flyToCity, setFlyToCity] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const onSelect = (s: Stadium) => {
     setSelected(s);
-    setDrawerOpen(true);
   };
 
   const onCityChange = (city: string) => {
@@ -36,7 +34,6 @@ function Index() {
     const match = stadiums.find((s) => s.city === city);
     if (match) {
       setSelected(match);
-      setDrawerOpen(true);
     }
   };
 
@@ -77,22 +74,6 @@ function Index() {
         <div className="h-[60px]" />
         <StadiumDetail stadium={selected} />
       </aside>
-
-      {/* Mobile drawer */}
-      <div
-        className={`fixed inset-x-0 bottom-0 z-30 max-h-[60vh] overflow-y-auto rounded-t-2xl bg-card shadow-2xl transition-transform duration-300 lg:hidden ${
-          drawerOpen && selected ? "translate-y-0" : "translate-y-full"
-        }`}
-      >
-        <button
-          onClick={() => setDrawerOpen(false)}
-          className="sticky top-0 z-10 flex w-full items-center justify-center bg-card py-2"
-          aria-label="Close"
-        >
-          <span className="h-1.5 w-12 rounded-full bg-muted-foreground/40" />
-        </button>
-        <StadiumDetail stadium={selected} />
-      </div>
     </div>
   );
 }
