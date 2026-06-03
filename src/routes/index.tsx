@@ -42,8 +42,8 @@ function Index() {
   };
 
   return (
-    <div className="relative flex h-screen w-screen flex-col overflow-hidden lg:flex-row">
-      <header className="absolute left-3 right-3 top-3 z-20 flex items-center justify-between gap-3 rounded-3xl glass px-4 py-3 shadow-soft lg:right-[396px]">
+    <div className="relative flex h-screen w-screen flex-col overflow-hidden md:flex-row">
+      <header className="absolute left-3 right-3 top-3 z-20 flex items-center justify-between gap-3 rounded-3xl glass px-4 py-3 shadow-soft md:right-[356px] lg:right-[396px]">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-primary text-lg shadow-glow">
             🌍
@@ -81,7 +81,7 @@ function Index() {
       </main>
 
       {/* Desktop side panel */}
-      <aside className="hidden h-full w-[392px] shrink-0 p-3 lg:block">
+      <aside className="hidden h-full w-[352px] shrink-0 p-3 md:block lg:w-[392px]">
         <div className="h-full overflow-y-auto rounded-3xl glass shadow-glow">
           <StadiumDetail stadium={selected} onPoisChange={handlePoisChange} />
         </div>
