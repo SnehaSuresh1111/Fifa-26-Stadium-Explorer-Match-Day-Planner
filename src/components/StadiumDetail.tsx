@@ -91,7 +91,7 @@ export default function StadiumDetail({
 
   if (!stadium) {
     return (
-      <div className="p-6 pt-20">
+      <div className="p-6">
         <div className="inline-flex items-center gap-1.5 rounded-full bg-gradient-soft px-3 py-1 text-xs font-semibold text-primary-foreground/90">
           <Sparkles size={12} /> Welcome
         </div>
@@ -122,7 +122,7 @@ export default function StadiumDetail({
 
   return (
     <div className="flex flex-col">
-      <div className="relative p-3 pt-20">
+      <div className="relative p-3">
         <div className="relative overflow-hidden rounded-3xl shadow-glow">
           <img src={stadium.imageUrl} alt={stadium.name} className="h-56 w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
