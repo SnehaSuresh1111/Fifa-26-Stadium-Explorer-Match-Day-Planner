@@ -8,9 +8,12 @@ import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Home from "@arcgis/core/widgets/Home";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import { stadiums, type Stadium } from "@/data/stadiums";
+import type { Poi } from "@/lib/overpass";
 
 const ACCENT = "#C0392B";
 const PRIMARY = "#1C4E8A";
+const HOTEL_COLOR = "#f59e0b";
+const FOOD_COLOR = "#10b981";
 
 const pinSvg = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'>
@@ -24,21 +27,31 @@ const pinSvg = (color: string) => {
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 };
 
+const dotSvg = (color: string) => {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
+    <circle cx='12' cy='12' r='8' fill='${color}' stroke='white' stroke-width='2.5'/>
+  </svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+};
+
 interface Props {
   selectedId: string | null;
   onSelect: (s: Stadium) => void;
   flyToCity: string | null;
+  pois?: Poi[];
 }
 
-export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
+export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
+  const poiLayerRef = useRef<GraphicsLayer | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const layer = new GraphicsLayer();
-    const map = new Map({ basemap: "osm", layers: [layer] });
+    const poiLayer = new GraphicsLayer();
+    const map = new Map({ basemap: "osm", layers: [poiLayer, layer] });
     const view = new MapView({
       container: containerRef.current,
       map,
@@ -85,6 +98,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
     });
 
     layerRef.current = layer;
+    poiLayerRef.current = poiLayer;
     viewRef.current = view;
 
     view.on("click", async (e) => {
@@ -139,6 +153,45 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
       zoom: 11,
     });
   }, [flyToCity]);
+
+  useEffect(() => {
+    const layer = poiLayerRef.current;
+    if (!layer) return;
+    layer.removeAll();
+    pois.forEach((p) => {
+      const color = p.kind === "hotel" ? HOTEL_COLOR : FOOD_COLOR;
+      const g = new Graphic({
+        geometry: new Point({ longitude: p.lon, latitude: p.lat }),
+        symbol: new PictureMarkerSymbol({ url: dotSvg(color), width: 18, height: 18 }),
+        attributes: { id: p.id, name: p.name, kind: p.kind, cuisine: p.cuisine, address: p.address },
+        popupTemplate: {
+          title: "{name}",
+          content: () => {
+            const wrap = document.createElement("div");
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
+            const badge = document.createElement("div");
+            badge.style.cssText = `display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:6px;`;
+            badge.textContent = p.kind;
+            wrap.appendChild(badge);
+            if (p.cuisine) {
+              const c = document.createElement("div");
+              c.style.cssText = "color:#818cf8;font-weight:600;text-transform:capitalize;";
+              c.textContent = p.cuisine;
+              wrap.appendChild(c);
+            }
+            if (p.address) {
+              const a = document.createElement("div");
+              a.style.cssText = "color:#6b7280;font-size:12px;margin-top:2px;";
+              a.textContent = p.address;
+              wrap.appendChild(a);
+            }
+            return wrap;
+          },
+        },
+      });
+      layer.add(g);
+    });
+  }, [pois]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
 }
