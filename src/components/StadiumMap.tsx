@@ -110,10 +110,10 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
     });
     if (view && selectedId) {
       const graphic = layer.graphics.find((g: any) => g.attributes.id === selectedId);
-      if (graphic) {
+      if (graphic && graphic.geometry) {
         view.openPopup({
           features: [graphic],
-          location: graphic.geometry,
+          location: graphic.geometry as Point,
         });
       }
     }
