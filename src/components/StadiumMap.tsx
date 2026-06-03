@@ -45,6 +45,9 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
       center: [-95, 40],
       zoom: 3,
       ui: { components: ["zoom"] },
+      popup: {
+        dockEnabled: false,
+      },
     });
     view.ui.add(new Home({ view }), "top-left");
 
@@ -58,10 +61,12 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
         popupTemplate: {
           title: "{name}",
           content: `
-            <div style="font-family:Arial,sans-serif">
-              <img src="${s.imageUrl}" style="width:100%;border-radius:6px;margin-bottom:8px"/>
-              <div style="color:#1C4E8A;font-weight:600">${s.city}, ${s.country}</div>
-              <div style="margin-top:6px">🏆 Capacity: <b>${s.capacity.toLocaleString()}</b></div>
+            <div style="font-family:'DM Sans',Arial,sans-serif;max-width:280px;">
+              <img src="${s.imageUrl}" style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;" alt="${s.name}" />
+              <div style="color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;">${s.city}, ${s.country}</div>
+              <div style="color:#c4b5fd;font-size:13px;">
+                <span style="margin-right:4px;">&#128100;</span> Capacity: <b>${s.capacity.toLocaleString()}</b>
+              </div>
             </div>`,
         },
       });
@@ -74,7 +79,13 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
       const hit = r.results.find((x: any) => x.graphic?.layer === layer) as any;
-      if (hit?.graphic) onSelect(hit.graphic.attributes as Stadium);
+      if (hit?.graphic) {
+        view.openPopup({
+          features: [hit.graphic],
+          location: e.mapPoint,
+        });
+        onSelect(hit.graphic.attributes as Stadium);
+      }
     });
 
     return () => {
@@ -85,6 +96,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
   }, []);
 
   useEffect(() => {
+    const view = viewRef.current;
     const layer = layerRef.current;
     if (!layer) return;
     layer.graphics.forEach((g: any) => {
@@ -96,6 +108,15 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
         yoffset: isSel ? 20 : 16,
       });
     });
+    if (view && selectedId) {
+      const graphic = layer.graphics.find((g: any) => g.attributes.id === selectedId);
+      if (graphic && graphic.geometry) {
+        view.openPopup({
+          features: [graphic],
+          location: graphic.geometry as Point,
+        });
+      }
+    }
   }, [selectedId]);
 
   useEffect(() => {
