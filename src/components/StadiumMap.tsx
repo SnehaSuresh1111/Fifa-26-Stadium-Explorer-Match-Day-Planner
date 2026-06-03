@@ -96,6 +96,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
   }, []);
 
   useEffect(() => {
+    const view = viewRef.current;
     const layer = layerRef.current;
     if (!layer) return;
     layer.graphics.forEach((g: any) => {
@@ -107,6 +108,15 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
         yoffset: isSel ? 20 : 16,
       });
     });
+    if (view && selectedId) {
+      const graphic = layer.graphics.find((g: any) => g.attributes.id === selectedId);
+      if (graphic) {
+        view.openPopup({
+          features: [graphic],
+          location: graphic.geometry,
+        });
+      }
+    }
   }, [selectedId]);
 
   useEffect(() => {
