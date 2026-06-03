@@ -38,7 +38,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity }: Props) {
   useEffect(() => {
     if (!containerRef.current) return;
     const layer = new GraphicsLayer();
-    const map = new Map({ basemap: "gray-vector", layers: [layer] });
+    const map = new Map({ basemap: "osm", layers: [layer] });
     const view = new MapView({
       container: containerRef.current,
       map,
