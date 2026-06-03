@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { cities, stadiums, type Stadium } from "@/data/stadiums";
 import StadiumDetail from "@/components/StadiumDetail";
+import type { Poi } from "@/lib/overpass";
 
 const StadiumMap = lazy(() => import("@/components/StadiumMap"));
 
@@ -21,7 +22,10 @@ function Index() {
   const [selected, setSelected] = useState<Stadium | null>(null);
   const [flyToCity, setFlyToCity] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [pois, setPois] = useState<Poi[]>([]);
   useEffect(() => setMounted(true), []);
+
+  const handlePoisChange = useCallback((next: Poi[]) => setPois(next), []);
 
   const onSelect = (s: Stadium) => {
     setSelected(s);
@@ -64,7 +68,12 @@ function Index() {
       <main className="relative flex-1">
         {mounted ? (
           <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>}>
-            <StadiumMap selectedId={selected?.id ?? null} onSelect={onSelect} flyToCity={flyToCity} />
+            <StadiumMap
+              selectedId={selected?.id ?? null}
+              onSelect={onSelect}
+              flyToCity={flyToCity}
+              pois={pois}
+            />
           </Suspense>
         ) : (
           <div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>
@@ -74,7 +83,7 @@ function Index() {
       {/* Desktop side panel */}
       <aside className="hidden h-full w-[392px] shrink-0 p-3 lg:block">
         <div className="h-full overflow-y-auto rounded-3xl glass shadow-glow">
-          <StadiumDetail stadium={selected} />
+          <StadiumDetail stadium={selected} onPoisChange={handlePoisChange} />
         </div>
       </aside>
     </div>

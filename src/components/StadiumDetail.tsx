@@ -1,7 +1,94 @@
-import { User, MapPin, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  User,
+  MapPin,
+  Sparkles,
+  Train,
+  Bus,
+  Footprints,
+  Car,
+  Navigation,
+  Hotel,
+  UtensilsCrossed,
+  Loader2,
+  ExternalLink,
+  Info,
+} from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
+import { transportData, googleMapsTransitUrl, type TransportMode } from "@/data/transport";
+import {
+  fetchHotels,
+  fetchRestaurants,
+  bookingUrl,
+  gmapsPlaceUrl,
+  type Poi,
+} from "@/lib/overpass";
 
-export default function StadiumDetail({ stadium }: { stadium: Stadium | null }) {
+type Tab = "overview" | "transport" | "hotels" | "restaurants";
+
+const modeIcon: Record<TransportMode, React.ComponentType<{ size?: number; className?: string }>> = {
+  train: Train,
+  bus: Bus,
+  shuttle: Bus,
+  walk: Footprints,
+  rideshare: Car,
+};
+
+export default function StadiumDetail({
+  stadium,
+  onPoisChange,
+}: {
+  stadium: Stadium | null;
+  onPoisChange?: (pois: Poi[]) => void;
+}) {
+  const [tab, setTab] = useState<Tab>("overview");
+  const [hotels, setHotels] = useState<Poi[]>([]);
+  const [restaurants, setRestaurants] = useState<Poi[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset to overview when stadium changes
+  useEffect(() => {
+    setTab("overview");
+    setHotels([]);
+    setRestaurants([]);
+    setError(null);
+    onPoisChange?.([]);
+  }, [stadium?.id, onPoisChange]);
+
+  // Fetch POIs lazily on tab open
+  useEffect(() => {
+    if (!stadium) return;
+    if (tab === "hotels" && hotels.length === 0) {
+      setLoading(true);
+      setError(null);
+      fetchHotels(stadium.id, stadium.latitude, stadium.longitude)
+        .then((list) => {
+          setHotels(list);
+          onPoisChange?.(list);
+        })
+        .catch((e) => setError(String(e)))
+        .finally(() => setLoading(false));
+    } else if (tab === "restaurants" && restaurants.length === 0) {
+      setLoading(true);
+      setError(null);
+      fetchRestaurants(stadium.id, stadium.latitude, stadium.longitude)
+        .then((list) => {
+          setRestaurants(list);
+          onPoisChange?.(list);
+        })
+        .catch((e) => setError(String(e)))
+        .finally(() => setLoading(false));
+    } else if (tab === "hotels") {
+      onPoisChange?.(hotels);
+    } else if (tab === "restaurants") {
+      onPoisChange?.(restaurants);
+    } else {
+      onPoisChange?.([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, stadium?.id]);
+
   if (!stadium) {
     return (
       <div className="p-6 pt-20">
@@ -46,29 +133,215 @@ export default function StadiumDetail({ stadium }: { stadium: Stadium | null }) 
           </div>
         </div>
       </div>
-      <div className="px-6 pb-6">
+      <div className="px-6 pb-2">
         <h2 className="text-3xl font-bold tracking-tight text-gradient-primary">{stadium.name}</h2>
         <div className="mt-1 text-sm text-muted-foreground">{stadium.city}</div>
+      </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-gradient-primary p-[1.5px] shadow-soft">
-            <div className="rounded-[calc(1rem-1px)] bg-white/90 p-4">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Capacity</div>
-              <div className="mt-1 flex items-center gap-2 text-xl font-bold text-foreground">
-                <User size={18} className="text-primary" />
-                {stadium.capacity.toLocaleString()}
-              </div>
-            </div>
+      <TabBar tab={tab} setTab={setTab} />
+
+      <div className="px-6 pb-6 pt-3">
+        {tab === "overview" && <OverviewTab stadium={stadium} />}
+        {tab === "transport" && <TransportTab stadium={stadium} />}
+        {tab === "hotels" && (
+          <PoiList
+            kind="hotel"
+            items={hotels}
+            loading={loading}
+            error={error}
+            emptyMessage="No hotels found nearby. Try expanding your search on Booking.com."
+          />
+        )}
+        {tab === "restaurants" && (
+          <PoiList
+            kind="restaurant"
+            items={restaurants}
+            loading={loading}
+            error={error}
+            emptyMessage="No restaurants found within 1.5 km of the stadium."
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TabBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const tabs: { id: Tab; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
+    { id: "overview", label: "Overview", Icon: Sparkles },
+    { id: "transport", label: "Transport", Icon: Train },
+    { id: "hotels", label: "Hotels", Icon: Hotel },
+    { id: "restaurants", label: "Eat", Icon: UtensilsCrossed },
+  ];
+  return (
+    <div className="sticky top-0 z-10 mx-3 mt-2 rounded-2xl glass p-1 shadow-soft">
+      <div className="grid grid-cols-4 gap-1">
+        {tabs.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-2 text-[11px] font-semibold transition ${
+              tab === id
+                ? "bg-gradient-primary text-white shadow-soft"
+                : "text-muted-foreground hover:bg-white/60"
+            }`}
+          >
+            <Icon size={16} />
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OverviewTab({ stadium }: { stadium: Stadium }) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <div className="rounded-2xl bg-gradient-primary p-[1.5px] shadow-soft">
+        <div className="rounded-[calc(1rem-1px)] bg-white/90 p-4">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Capacity</div>
+          <div className="mt-1 flex items-center gap-2 text-xl font-bold text-foreground">
+            <User size={18} className="text-primary" />
+            {stadium.capacity.toLocaleString()}
           </div>
-          <div className="rounded-2xl bg-white/85 p-4 shadow-soft ring-1 ring-border">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Coordinates</div>
-            <div className="mt-2 font-mono text-xs text-foreground">
-              {stadium.latitude.toFixed(3)}°<br />
-              {stadium.longitude.toFixed(3)}°
-            </div>
-          </div>
+        </div>
+      </div>
+      <div className="rounded-2xl bg-white/85 p-4 shadow-soft ring-1 ring-border">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Coordinates</div>
+        <div className="mt-2 font-mono text-xs text-foreground">
+          {stadium.latitude.toFixed(3)}°<br />
+          {stadium.longitude.toFixed(3)}°
         </div>
       </div>
     </div>
   );
+}
+
+function TransportTab({ stadium }: { stadium: Stadium }) {
+  const data = transportData[stadium.id];
+  const gmaps = googleMapsTransitUrl(stadium.latitude, stadium.longitude, stadium.name);
+  return (
+    <div className="space-y-3">
+      <a
+        href={gmaps}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
+      >
+        <Navigation size={16} /> Get Directions
+      </a>
+
+      {data.options.map((opt, i) => {
+        const Icon = modeIcon[opt.mode];
+        return (
+          <div key={i} className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-soft text-primary">
+                <Icon size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="truncate text-sm font-bold text-foreground">{opt.provider}</div>
+                <div className="truncate text-xs text-muted-foreground">{opt.line}</div>
+              </div>
+            </div>
+            <div className="mt-2 flex justify-between text-xs">
+              <span className="font-semibold text-primary">{opt.duration}</span>
+              <span className="text-muted-foreground">{opt.cost}</span>
+            </div>
+          </div>
+        );
+      })}
+
+      <div className="flex gap-2 rounded-2xl bg-gradient-soft/40 p-3 ring-1 ring-primary/20">
+        <Info size={16} className="mt-0.5 shrink-0 text-primary" />
+        <div className="text-xs text-foreground">
+          <div className="font-bold uppercase tracking-wider text-[10px] text-primary">Matchday Note</div>
+          <div className="mt-1">{data.matchdayNote}</div>
+        </div>
+      </div>
+
+      <p className="pt-1 text-center text-[10px] text-muted-foreground">
+        Transport info curated for FIFA 2026 matchdays. For live navigation tap Get Directions.
+      </p>
+    </div>
+  );
+}
+
+function PoiList({
+  kind,
+  items,
+  loading,
+  error,
+  emptyMessage,
+}: {
+  kind: "hotel" | "restaurant";
+  items: Poi[];
+  loading: boolean;
+  error: string | null;
+  emptyMessage: string;
+}) {
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+        <Loader2 className="animate-spin text-primary" size={28} />
+        <div className="mt-3 text-xs">Loading nearby {kind === "hotel" ? "hotels" : "places to eat"}…</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="rounded-2xl bg-destructive/10 p-4 text-xs text-destructive">
+        Couldn't reach OpenStreetMap. Please try again shortly.
+      </div>
+    );
+  }
+  if (items.length === 0) {
+    return (
+      <div className="rounded-2xl bg-white/85 p-4 text-xs text-muted-foreground ring-1 ring-border">
+        {emptyMessage}
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2.5">
+      {items.map((p) => (
+        <PoiCard key={p.id} poi={p} kind={kind} />
+      ))}
+    </div>
+  );
+}
+
+function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
+  const href = kind === "hotel" ? bookingUrl(poi.name) : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
+  const label = kind === "hotel" ? "Check Prices" : "View on Map";
+  return (
+    <div className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-bold text-foreground">{poi.name}</div>
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
+            <span className="font-semibold text-primary">{formatDistance(poi.distance)}</span>
+            {poi.cuisine && <span className="capitalize">· {poi.cuisine}</span>}
+            {poi.stars && <span>· {poi.stars}★</span>}
+          </div>
+          {poi.address && (
+            <div className="mt-1 truncate text-[11px] text-muted-foreground">{poi.address}</div>
+          )}
+        </div>
+      </div>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-2 inline-flex items-center gap-1 rounded-full bg-gradient-soft px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:opacity-80"
+      >
+        {label} <ExternalLink size={11} />
+      </a>
+    </div>
+  );
+}
+
+function formatDistance(m: number): string {
+  return m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`;
 }
