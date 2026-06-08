@@ -36,6 +36,8 @@ const dotSvg = (color: string) => {
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 };
 
+type GraphicHit = { graphic?: Graphic };
+
 interface Props {
   selectedId: string | null;
   onSelect: (s: Stadium) => void;
@@ -59,7 +61,11 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       copyright: "Map data © OpenStreetMap contributors, CC-BY-SA",
     });
     const map = new Map({
-      basemap: new Basemap({ baseLayers: [osmTiles], title: "OpenStreetMap", id: "openstreetmap" }),
+      basemap: new Basemap({
+        baseLayers: [osmTiles],
+        title: "OpenStreetMap",
+        id: "openstreetmap",
+      }),
       layers: [poiLayer, layer],
     });
     const view = new MapView({
@@ -74,7 +80,12 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     });
     view.ui.add(new Home({ view }), "top-left");
 
-    const defaultSym = new PictureMarkerSymbol({ url: pinSvg(ACCENT), width: 32, height: 40, yoffset: 16 });
+    const defaultSym = new PictureMarkerSymbol({
+      url: pinSvg(ACCENT),
+      width: 32,
+      height: 40,
+      yoffset: 16,
+    });
 
     stadiums.forEach((s) => {
       const g = new Graphic({
@@ -90,7 +101,8 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
             img.src = s.imageUrl;
             img.alt = s.name;
             img.referrerPolicy = "no-referrer";
-            img.style.cssText = "width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;";
+            img.style.cssText =
+              "width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;";
             const loc = document.createElement("div");
             loc.style.cssText = "color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;";
             loc.textContent = `${s.city}, ${s.country}`;
@@ -113,7 +125,10 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
 
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
-      const hit = r.results.find((x: any) => x.graphic?.layer === layer) as any;
+      const hit = r.results.find((result): result is GraphicHit => {
+        const maybeHit = result as GraphicHit;
+        return maybeHit.graphic?.layer === layer;
+      });
       if (hit?.graphic) {
         view.openPopup({
           features: [hit.graphic],
