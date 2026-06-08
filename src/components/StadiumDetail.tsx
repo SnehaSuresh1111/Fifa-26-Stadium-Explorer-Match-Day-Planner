@@ -212,11 +212,11 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
       </div>
       <div className="rounded-2xl bg-white/85 p-4 shadow-soft ring-1 ring-border">
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Coordinates
+          Host City
         </div>
-        <div className="mt-2 font-mono text-xs text-foreground">
-          {stadium.latitude.toFixed(3)}°<br />
-          {stadium.longitude.toFixed(3)}°
+        <div className="mt-1 flex items-start gap-2 text-sm font-bold text-foreground">
+          <MapPin size={18} className="mt-0.5 shrink-0 text-primary" />
+          <span>{stadium.city}</span>
         </div>
       </div>
     </div>
