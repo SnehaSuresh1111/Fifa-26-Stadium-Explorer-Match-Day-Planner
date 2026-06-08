@@ -1,5 +1,6 @@
 import { queryPlacesNearPoint } from "@arcgis/core/rest/places";
-import type PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
+import PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
+import Point from "@arcgis/core/geometry/Point";
 
 export interface Poi {
   id: string;
@@ -22,13 +23,12 @@ async function runPlaces(
   categoryIds: string[],
   kind: "hotel" | "restaurant",
 ): Promise<Poi[]> {
-  const params = {
-    x: lon,
-    y: lat,
+  const params = new PlacesQueryParameters({
+    point: new Point({ longitude: lon, latitude: lat }),
     radius,
     categoryIds,
     pageSize: 20,
-  } as unknown as PlacesQueryParameters;
+  });
 
   const result = await queryPlacesNearPoint(params);
   const items = result.results ?? [];

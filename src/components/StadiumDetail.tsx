@@ -304,7 +304,7 @@ function PoiList({
   if (error) {
     return (
       <div className="rounded-2xl bg-destructive/10 p-4 text-xs text-destructive">
-        Couldn't reach OpenStreetMap. Please try again shortly.
+        Couldn't reach ArcGIS Places. Please try again shortly.
       </div>
     );
   }
