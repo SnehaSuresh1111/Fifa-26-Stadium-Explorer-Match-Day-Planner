@@ -85,7 +85,7 @@ export default function StadiumMap({
     const layer = new GraphicsLayer();
     const poiLayer = new GraphicsLayer();
     const map = new Map({
-      basemap: "arcgis-navigation",
+      basemap: "streets-navigation-vector",
       layers: [poiLayer, layer],
     });
     const view = new MapView({
