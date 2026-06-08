@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import Map from "@arcgis/core/Map";
+import Basemap from "@arcgis/core/Basemap";
 import MapView from "@arcgis/core/views/MapView";
 import Graphic from "@arcgis/core/Graphic";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import Point from "@arcgis/core/geometry/Point";
 import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Home from "@arcgis/core/widgets/Home";
@@ -34,6 +36,8 @@ const dotSvg = (color: string) => {
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 };
 
+type HitWithGraphic = { graphic?: Graphic };
+
 interface Props {
   selectedId: string | null;
   onSelect: (s: Stadium) => void;
@@ -51,7 +55,19 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     if (!containerRef.current) return;
     const layer = new GraphicsLayer();
     const poiLayer = new GraphicsLayer();
-    const map = new Map({ basemap: "osm", layers: [poiLayer, layer] });
+    const osmTiles = new WebTileLayer({
+      urlTemplate: "https://{subDomain}.tile.openstreetmap.org/{level}/{col}/{row}.png",
+      subDomains: ["a", "b", "c"],
+      copyright: "Map data © OpenStreetMap contributors, CC-BY-SA",
+    });
+    const map = new Map({
+      basemap: new Basemap({
+        baseLayers: [osmTiles],
+        title: "OpenStreetMap",
+        id: "openstreetmap",
+      }),
+      layers: [poiLayer, layer],
+    });
     const view = new MapView({
       container: containerRef.current,
       map,
@@ -64,7 +80,12 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     });
     view.ui.add(new Home({ view }), "top-left");
 
-    const defaultSym = new PictureMarkerSymbol({ url: pinSvg(ACCENT), width: 32, height: 40, yoffset: 16 });
+    const defaultSym = new PictureMarkerSymbol({
+      url: pinSvg(ACCENT),
+      width: 32,
+      height: 40,
+      yoffset: 16,
+    });
 
     stadiums.forEach((s) => {
       const g = new Graphic({
@@ -80,7 +101,8 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
             img.src = s.imageUrl;
             img.alt = s.name;
             img.referrerPolicy = "no-referrer";
-            img.style.cssText = "width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;";
+            img.style.cssText =
+              "width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;";
             const loc = document.createElement("div");
             loc.style.cssText = "color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;";
             loc.textContent = `${s.city}, ${s.country}`;
@@ -103,13 +125,17 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
 
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
-      const hit = r.results.find((x: any) => x.graphic?.layer === layer) as any;
-      if (hit?.graphic) {
+      const hit = r.results.find((result) => {
+        const maybeHit = result as HitWithGraphic;
+        return maybeHit.graphic?.layer === layer;
+      });
+      const graphic = (hit as HitWithGraphic | undefined)?.graphic;
+      if (graphic) {
         view.openPopup({
-          features: [hit.graphic],
+          features: [graphic],
           location: e.mapPoint,
         });
-        onSelect(hit.graphic.attributes as Stadium);
+        onSelect(graphic.attributes as Stadium);
       }
     });
 
@@ -124,7 +150,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     const view = viewRef.current;
     const layer = layerRef.current;
     if (!layer) return;
-    layer.graphics.forEach((g: any) => {
+    layer.graphics.forEach((g) => {
       const isSel = g.attributes.id === selectedId;
       g.symbol = new PictureMarkerSymbol({
         url: pinSvg(isSel ? PRIMARY : ACCENT),
@@ -134,7 +160,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       });
     });
     if (view && selectedId) {
-      const graphic = layer.graphics.find((g: any) => g.attributes.id === selectedId);
+      const graphic = layer.graphics.find((g) => g.attributes.id === selectedId);
       if (graphic && graphic.geometry) {
         view.openPopup({
           features: [graphic],
@@ -163,12 +189,19 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       const g = new Graphic({
         geometry: new Point({ longitude: p.lon, latitude: p.lat }),
         symbol: new PictureMarkerSymbol({ url: dotSvg(color), width: 18, height: 18 }),
-        attributes: { id: p.id, name: p.name, kind: p.kind, cuisine: p.cuisine, address: p.address },
+        attributes: {
+          id: p.id,
+          name: p.name,
+          kind: p.kind,
+          cuisine: p.cuisine,
+          address: p.address,
+        },
         popupTemplate: {
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
+            wrap.style.cssText =
+              "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
             const badge = document.createElement("div");
             badge.style.cssText = `display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:6px;`;
             badge.textContent = p.kind;
@@ -193,5 +226,5 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     });
   }, [pois]);
 
-  return <div ref={containerRef} className="absolute inset-0" />;
+  return <div ref={containerRef} className="absolute inset-0 h-full min-h-screen w-full" />;
 }
