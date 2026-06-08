@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import Map from "@arcgis/core/Map";
+import Basemap from "@arcgis/core/Basemap";
 import MapView from "@arcgis/core/views/MapView";
 import Graphic from "@arcgis/core/Graphic";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
+import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import Point from "@arcgis/core/geometry/Point";
 import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Home from "@arcgis/core/widgets/Home";
@@ -51,7 +53,15 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     if (!containerRef.current) return;
     const layer = new GraphicsLayer();
     const poiLayer = new GraphicsLayer();
-    const map = new Map({ basemap: "osm", layers: [poiLayer, layer] });
+    const osmTiles = new WebTileLayer({
+      urlTemplate: "https://{subDomain}.tile.openstreetmap.org/{level}/{col}/{row}.png",
+      subDomains: ["a", "b", "c"],
+      copyright: "Map data © OpenStreetMap contributors, CC-BY-SA",
+    });
+    const map = new Map({
+      basemap: new Basemap({ baseLayers: [osmTiles], title: "OpenStreetMap", id: "openstreetmap" }),
+      layers: [poiLayer, layer],
+    });
     const view = new MapView({
       container: containerRef.current,
       map,
@@ -193,5 +203,5 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     });
   }, [pois]);
 
-  return <div ref={containerRef} className="absolute inset-0" />;
+  return <div ref={containerRef} className="absolute inset-0 h-full min-h-screen w-full" />;
 }
