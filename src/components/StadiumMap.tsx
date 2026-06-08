@@ -1,16 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Map from "@arcgis/core/Map";
-import Basemap from "@arcgis/core/Basemap";
 import MapView from "@arcgis/core/views/MapView";
 import Graphic from "@arcgis/core/Graphic";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import WebTileLayer from "@arcgis/core/layers/WebTileLayer";
 import Point from "@arcgis/core/geometry/Point";
 import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Home from "@arcgis/core/widgets/Home";
+import esriConfig from "@arcgis/core/config";
+import RouteLayer from "@arcgis/core/layers/RouteLayer";
+import Directions from "@arcgis/core/widgets/Directions";
+import Stop from "@arcgis/core/rest/support/Stop";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import type { Poi } from "@/lib/overpass";
+import { useServerFn } from "@tanstack/react-start";
+import { getArcgisKey } from "@/lib/arcgis.functions";
 
 const ACCENT = "#C0392B";
 const PRIMARY = "#1C4E8A";
@@ -43,29 +47,39 @@ interface Props {
   onSelect: (s: Stadium) => void;
   flyToCity: string | null;
   pois?: Poi[];
+  directionsFor?: Stadium | null;
 }
 
-export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] }: Props) {
+export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [], directionsFor }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
   const poiLayerRef = useRef<GraphicsLayer | null>(null);
+  const mapRef = useRef<Map | null>(null);
+  const directionsRef = useRef<Directions | null>(null);
+  const routeLayerRef = useRef<RouteLayer | null>(null);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const fetchKey = useServerFn(getArcgisKey);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    let cancelled = false;
+    fetchKey()
+      .then((r) => {
+        if (!cancelled) setApiKey(r.key || "");
+      })
+      .catch(() => setApiKey(""));
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchKey]);
+
+  useEffect(() => {
+    if (!containerRef.current || apiKey === null) return;
+    if (apiKey) esriConfig.apiKey = apiKey;
     const layer = new GraphicsLayer();
     const poiLayer = new GraphicsLayer();
-    const osmTiles = new WebTileLayer({
-      urlTemplate: "https://{subDomain}.tile.openstreetmap.org/{level}/{col}/{row}.png",
-      subDomains: ["a", "b", "c"],
-      copyright: "Map data © OpenStreetMap contributors, CC-BY-SA",
-    });
     const map = new Map({
-      basemap: new Basemap({
-        baseLayers: [osmTiles],
-        title: "OpenStreetMap",
-        id: "openstreetmap",
-      }),
+      basemap: "arcgis-navigation",
       layers: [poiLayer, layer],
     });
     const view = new MapView({
@@ -122,6 +136,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     layerRef.current = layer;
     poiLayerRef.current = poiLayer;
     viewRef.current = view;
+    mapRef.current = map;
 
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
@@ -142,9 +157,12 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     return () => {
       view.destroy();
       viewRef.current = null;
+      mapRef.current = null;
+      directionsRef.current = null;
+      routeLayerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [apiKey]);
 
   useEffect(() => {
     const view = viewRef.current;
@@ -225,6 +243,59 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       layer.add(g);
     });
   }, [pois]);
+
+  // Directions widget toggle
+  useEffect(() => {
+    const view = viewRef.current;
+    const map = mapRef.current;
+    if (!view || !map) return;
+    if (!directionsFor) {
+      if (directionsRef.current) {
+        view.ui.remove(directionsRef.current);
+        directionsRef.current.destroy();
+        directionsRef.current = null;
+      }
+      if (routeLayerRef.current) {
+        map.remove(routeLayerRef.current);
+        routeLayerRef.current = null;
+      }
+      return;
+    }
+    if (!routeLayerRef.current) {
+      routeLayerRef.current = new RouteLayer();
+      map.add(routeLayerRef.current);
+    }
+    if (!directionsRef.current) {
+      directionsRef.current = new Directions({
+        view,
+        layer: routeLayerRef.current,
+      });
+      view.ui.add(directionsRef.current, "top-right");
+    }
+    const widget = directionsRef.current;
+    widget.when(() => {
+      const stops = widget.viewModel.stops;
+      stops.removeAll();
+      stops.add(new Stop({ name: "Origin" }));
+      stops.add(
+        new Stop({
+          name: directionsFor.name,
+          geometry: new Point({
+            longitude: directionsFor.longitude,
+            latitude: directionsFor.latitude,
+          }),
+        })
+      );
+    });
+  }, [directionsFor]);
+
+  if (apiKey === null) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+        Loading map…
+      </div>
+    );
+  }
 
   return <div ref={containerRef} className="absolute inset-0 h-full min-h-screen w-full" />;
 }
