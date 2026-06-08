@@ -45,6 +45,7 @@ interface Props {
   pois?: Poi[];
 }
 
+
 export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
