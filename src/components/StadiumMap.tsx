@@ -117,20 +117,13 @@ export default function StadiumMap({
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:280px;";
-            const img = document.createElement("img");
-            img.src = s.imageUrl;
-            img.alt = s.name;
-            img.referrerPolicy = "no-referrer";
-            img.style.cssText =
-              "width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:10px;display:block;";
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:220px;";
             const loc = document.createElement("div");
             loc.style.cssText = "color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;";
             loc.textContent = `${s.city}, ${s.country}`;
             const cap = document.createElement("div");
             cap.style.cssText = "color:#c4b5fd;font-size:13px;";
             cap.innerHTML = `<span style="margin-right:4px;">&#128100;</span> Capacity: <b>${s.capacity.toLocaleString()}</b>`;
-            wrap.appendChild(img);
             wrap.appendChild(loc);
             wrap.appendChild(cap);
             return wrap;
@@ -276,8 +269,16 @@ export default function StadiumMap({
       directionsRef.current = new Directions({
         view,
         layer: routeLayerRef.current,
+        apiKey: apiKey || undefined,
+        unit: "metric",
+        visibleElements: {
+          saveAsButton: false,
+          saveButton: false,
+          layerDetailsLink: false,
+          printButton: false,
+        },
       });
-      view.ui.add(directionsRef.current, "top-right");
+      view.ui.add(directionsRef.current, "top-left");
     }
     const widget = directionsRef.current;
     const route = routeLayerRef.current;
