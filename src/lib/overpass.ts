@@ -24,9 +24,11 @@ async function runPlaces(
   kind: "hotel" | "restaurant",
 ): Promise<Poi[]> {
   const params = new PlacesQueryParameters({
+    apiKey: esriConfig.apiKey || undefined,
     point: new Point({ longitude: lon, latitude: lat }),
     radius,
     categoryIds,
+    icon: null,
     pageSize: 20,
   });
 
@@ -61,8 +63,8 @@ export async function fetchHotels(
 ): Promise<Poi[]> {
   const key = `hotels:${stadiumId}:${radius}`;
   if (cache.has(key)) return cache.get(key)!;
-  // ArcGIS Places category: Travel and Transportation > Lodging
-  const list = (await runPlaces(lat, lon, radius, ["19009"], "hotel")).slice(0, 10);
+  // ArcGIS Places category: Travel and Transportation > Lodging > Hotel
+  const list = (await runPlaces(lat, lon, radius, ["4bf58dd8d48988d1fa931735"], "hotel")).slice(0, 10);
   cache.set(key, list);
   return list;
 }
@@ -75,8 +77,8 @@ export async function fetchRestaurants(
 ): Promise<Poi[]> {
   const key = `restaurants:${stadiumId}:${radius}`;
   if (cache.has(key)) return cache.get(key)!;
-  // ArcGIS Places category: Dining and Drinking
-  const list = (await runPlaces(lat, lon, radius, ["13000"], "restaurant")).slice(0, 15);
+  // ArcGIS Places category: Dining and Drinking > Restaurant
+  const list = (await runPlaces(lat, lon, radius, ["4d4b7105d754a06374d81259"], "restaurant")).slice(0, 15);
   cache.set(key, list);
   return list;
 }
