@@ -273,11 +273,11 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [],
       view.ui.add(directionsRef.current, "top-right");
     }
     const widget = directionsRef.current;
+    const route = routeLayerRef.current;
     widget.when(() => {
-      const stops = widget.viewModel.stops;
-      stops.removeAll();
-      stops.add(new Stop({ name: "Origin" }));
-      stops.add(
+      route.stops.removeAll();
+      route.stops.add(new Stop({ name: "Origin" }));
+      route.stops.add(
         new Stop({
           name: directionsFor.name,
           geometry: new Point({
