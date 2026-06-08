@@ -37,9 +37,11 @@ const modeIcon: Record<TransportMode, React.ComponentType<{ size?: number; class
 export default function StadiumDetail({
   stadium,
   onPoisChange,
+  onShowDirections,
 }: {
   stadium: Stadium | null;
   onPoisChange?: (pois: Poi[]) => void;
+  onShowDirections?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [hotels, setHotels] = useState<Poi[]>([]);
@@ -142,7 +144,9 @@ export default function StadiumDetail({
 
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
-        {tab === "transport" && <TransportTab stadium={stadium} />}
+        {tab === "transport" && (
+          <TransportTab stadium={stadium} onShowDirections={onShowDirections} />
+        )}
         {tab === "hotels" && (
           <PoiList
             kind="hotel"
@@ -218,19 +222,22 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
-function TransportTab({ stadium }: { stadium: Stadium }) {
+function TransportTab({
+  stadium,
+  onShowDirections,
+}: {
+  stadium: Stadium;
+  onShowDirections?: () => void;
+}) {
   const data = transportData[stadium.id];
-  const gmaps = googleMapsTransitUrl(stadium.latitude, stadium.longitude, stadium.name);
   return (
     <div className="space-y-3">
-      <a
-        href={gmaps}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
+      <button
+        onClick={() => onShowDirections?.()}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
       >
         <Navigation size={16} /> Get Directions
-      </a>
+      </button>
 
       {data.options.map((opt, i) => {
         const Icon = modeIcon[opt.mode];
