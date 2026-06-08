@@ -16,17 +16,14 @@ import {
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import { transportData, googleMapsTransitUrl, type TransportMode } from "@/data/transport";
-import {
-  fetchHotels,
-  fetchRestaurants,
-  bookingUrl,
-  gmapsPlaceUrl,
-  type Poi,
-} from "@/lib/overpass";
+import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants";
 
-const modeIcon: Record<TransportMode, React.ComponentType<{ size?: number; className?: string }>> = {
+const modeIcon: Record<
+  TransportMode,
+  React.ComponentType<{ size?: number; className?: string }>
+> = {
   train: Train,
   bus: Bus,
   shuttle: Bus,
@@ -37,9 +34,11 @@ const modeIcon: Record<TransportMode, React.ComponentType<{ size?: number; class
 export default function StadiumDetail({
   stadium,
   onPoisChange,
+  onShowDirections,
 }: {
   stadium: Stadium | null;
   onPoisChange?: (pois: Poi[]) => void;
+  onShowDirections?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [hotels, setHotels] = useState<Poi[]>([]);
@@ -111,7 +110,9 @@ export default function StadiumDetail({
             <div key={s.l} className="rounded-2xl bg-gradient-primary p-[1.5px] shadow-soft">
               <div className="rounded-[calc(1rem-1px)] bg-white/85 p-3 text-center">
                 <div className="text-2xl font-bold text-gradient-primary">{s.n}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.l}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {s.l}
+                </div>
               </div>
             </div>
           ))}
@@ -142,7 +143,9 @@ export default function StadiumDetail({
 
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
-        {tab === "transport" && <TransportTab stadium={stadium} />}
+        {tab === "transport" && (
+          <TransportTab stadium={stadium} onShowDirections={onShowDirections} />
+        )}
         {tab === "hotels" && (
           <PoiList
             kind="hotel"
@@ -208,7 +211,9 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
         </div>
       </div>
       <div className="rounded-2xl bg-white/85 p-4 shadow-soft ring-1 ring-border">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Coordinates</div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          Coordinates
+        </div>
         <div className="mt-2 font-mono text-xs text-foreground">
           {stadium.latitude.toFixed(3)}°<br />
           {stadium.longitude.toFixed(3)}°
@@ -218,19 +223,22 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
-function TransportTab({ stadium }: { stadium: Stadium }) {
+function TransportTab({
+  stadium,
+  onShowDirections,
+}: {
+  stadium: Stadium;
+  onShowDirections?: () => void;
+}) {
   const data = transportData[stadium.id];
-  const gmaps = googleMapsTransitUrl(stadium.latitude, stadium.longitude, stadium.name);
   return (
     <div className="space-y-3">
-      <a
-        href={gmaps}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
+      <button
+        onClick={() => onShowDirections?.()}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
       >
         <Navigation size={16} /> Get Directions
-      </a>
+      </button>
 
       {data.options.map((opt, i) => {
         const Icon = modeIcon[opt.mode];
@@ -256,7 +264,9 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
       <div className="flex gap-2 rounded-2xl bg-gradient-soft/40 p-3 ring-1 ring-primary/20">
         <Info size={16} className="mt-0.5 shrink-0 text-primary" />
         <div className="text-xs text-foreground">
-          <div className="font-bold uppercase tracking-wider text-[10px] text-primary">Matchday Note</div>
+          <div className="font-bold uppercase tracking-wider text-[10px] text-primary">
+            Matchday Note
+          </div>
           <div className="mt-1">{data.matchdayNote}</div>
         </div>
       </div>
@@ -285,7 +295,9 @@ function PoiList({
     return (
       <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
         <Loader2 className="animate-spin text-primary" size={28} />
-        <div className="mt-3 text-xs">Loading nearby {kind === "hotel" ? "hotels" : "places to eat"}…</div>
+        <div className="mt-3 text-xs">
+          Loading nearby {kind === "hotel" ? "hotels" : "places to eat"}…
+        </div>
       </div>
     );
   }

@@ -11,9 +11,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "FIFA 2026 Stadium Explorer" },
-      { name: "description", content: "Explore all 16 host stadiums of the FIFA World Cup 2026 across the USA, Canada, and Mexico on an interactive map." },
+      {
+        name: "description",
+        content:
+          "Explore all 16 host stadiums of the FIFA World Cup 2026 across the USA, Canada, and Mexico on an interactive map.",
+      },
       { property: "og:title", content: "FIFA 2026 Stadium Explorer" },
-      { property: "og:description", content: "Interactive ArcGIS map of every FIFA World Cup 2026 host stadium." },
+      {
+        property: "og:description",
+        content: "Interactive ArcGIS map of every FIFA World Cup 2026 host stadium.",
+      },
     ],
   }),
   component: Index,
@@ -26,6 +33,7 @@ function Index() {
   const [pois, setPois] = useState<Poi[]>([]);
   const [panelOpen, setPanelOpen] = useState(true);
   const [showList, setShowList] = useState(true);
+  const [directionsFor, setDirectionsFor] = useState<Stadium | null>(null);
   useEffect(() => setMounted(true), []);
 
   const handlePoisChange = useCallback((next: Poi[]) => setPois(next), []);
@@ -34,6 +42,7 @@ function Index() {
     setSelected(s);
     setShowList(false);
     setPanelOpen(true);
+    setDirectionsFor(null);
   };
 
   const onPickStadium = (s: Stadium) => {
@@ -41,22 +50,32 @@ function Index() {
     setTimeout(() => setFlyToCity(null), 50);
     setSelected(s);
     setShowList(false);
+    setDirectionsFor(null);
   };
 
   return (
     <div className="relative flex h-screen w-screen overflow-hidden">
       <main className="relative flex-1">
         {mounted ? (
-          <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>}>
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                Loading map…
+              </div>
+            }
+          >
             <StadiumMap
               selectedId={selected?.id ?? null}
               onSelect={onSelect}
               flyToCity={flyToCity}
               pois={pois}
+              directionsFor={directionsFor}
             />
           </Suspense>
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>
+          <div className="flex h-full items-center justify-center text-muted-foreground">
+            Loading map…
+          </div>
         )}
 
         {!panelOpen && (
@@ -84,8 +103,12 @@ function Index() {
                 🌍
               </div>
               <div>
-                <h1 className="text-sm font-bold leading-tight text-gradient-primary">FIFA World Cup 2026</h1>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Stadium Explorer</p>
+                <h1 className="text-sm font-bold leading-tight text-gradient-primary">
+                  FIFA World Cup 2026
+                </h1>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Stadium Explorer
+                </p>
               </div>
             </div>
             <button
@@ -118,7 +141,11 @@ function Index() {
             {showList || !selected ? (
               <StadiumList selectedId={selected?.id ?? null} onPick={onPickStadium} />
             ) : (
-              <StadiumDetail stadium={selected} onPoisChange={handlePoisChange} />
+              <StadiumDetail
+                stadium={selected}
+                onPoisChange={handlePoisChange}
+                onShowDirections={() => setDirectionsFor(selected)}
+              />
             )}
           </div>
         </div>
