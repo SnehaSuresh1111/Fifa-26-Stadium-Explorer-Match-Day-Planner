@@ -11,9 +11,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "FIFA 2026 Stadium Explorer" },
-      { name: "description", content: "Explore all 16 host stadiums of the FIFA World Cup 2026 across the USA, Canada, and Mexico on an interactive map." },
+      {
+        name: "description",
+        content:
+          "Explore all 16 host stadiums of the FIFA World Cup 2026 across the USA, Canada, and Mexico on an interactive map.",
+      },
       { property: "og:title", content: "FIFA 2026 Stadium Explorer" },
-      { property: "og:description", content: "Interactive ArcGIS map of every FIFA World Cup 2026 host stadium." },
+      {
+        property: "og:description",
+        content: "Interactive ArcGIS map of every FIFA World Cup 2026 host stadium.",
+      },
     ],
   }),
   component: Index,
@@ -50,7 +57,13 @@ function Index() {
     <div className="relative flex h-screen w-screen overflow-hidden">
       <main className="relative flex-1">
         {mounted ? (
-          <Suspense fallback={<div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>}>
+          <Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                Loading map…
+              </div>
+            }
+          >
             <StadiumMap
               selectedId={selected?.id ?? null}
               onSelect={onSelect}
@@ -60,7 +73,9 @@ function Index() {
             />
           </Suspense>
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">Loading map…</div>
+          <div className="flex h-full items-center justify-center text-muted-foreground">
+            Loading map…
+          </div>
         )}
 
         {!panelOpen && (
@@ -88,8 +103,12 @@ function Index() {
                 🌍
               </div>
               <div>
-                <h1 className="text-sm font-bold leading-tight text-gradient-primary">FIFA World Cup 2026</h1>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Stadium Explorer</p>
+                <h1 className="text-sm font-bold leading-tight text-gradient-primary">
+                  FIFA World Cup 2026
+                </h1>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Stadium Explorer
+                </p>
               </div>
             </div>
             <button

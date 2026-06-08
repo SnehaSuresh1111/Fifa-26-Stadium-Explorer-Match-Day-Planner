@@ -20,7 +20,7 @@ async function runPlaces(
   lon: number,
   radius: number,
   categoryIds: string[],
-  kind: "hotel" | "restaurant"
+  kind: "hotel" | "restaurant",
 ): Promise<Poi[]> {
   const params = {
     x: lon,
@@ -57,7 +57,7 @@ export async function fetchHotels(
   stadiumId: string,
   lat: number,
   lon: number,
-  radius = 1500
+  radius = 1500,
 ): Promise<Poi[]> {
   const key = `hotels:${stadiumId}:${radius}`;
   if (cache.has(key)) return cache.get(key)!;
@@ -71,7 +71,7 @@ export async function fetchRestaurants(
   stadiumId: string,
   lat: number,
   lon: number,
-  radius = 1500
+  radius = 1500,
 ): Promise<Poi[]> {
   const key = `restaurants:${stadiumId}:${radius}`;
   if (cache.has(key)) return cache.get(key)!;

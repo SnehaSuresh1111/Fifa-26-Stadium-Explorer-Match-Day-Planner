@@ -50,7 +50,13 @@ interface Props {
   directionsFor?: Stadium | null;
 }
 
-export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [], directionsFor }: Props) {
+export default function StadiumMap({
+  selectedId,
+  onSelect,
+  flyToCity,
+  pois = [],
+  directionsFor,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
@@ -284,7 +290,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [],
             longitude: directionsFor.longitude,
             latitude: directionsFor.latitude,
           }),
-        })
+        }),
       );
     });
   }, [directionsFor]);
