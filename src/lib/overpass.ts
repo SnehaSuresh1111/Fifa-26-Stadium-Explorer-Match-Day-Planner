@@ -1,6 +1,7 @@
 import { queryPlacesNearPoint } from "@arcgis/core/rest/places";
 import PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
 import Point from "@arcgis/core/geometry/Point";
+import esriConfig from "@arcgis/core/config";
 
 export interface Poi {
   id: string;
@@ -15,6 +16,22 @@ export interface Poi {
 }
 
 const cache = new Map<string, Poi[]>();
+const pending = new Map<string, Promise<Poi[]>>();
+
+function cachedPoiRequest(key: string, load: () => Promise<Poi[]>): Promise<Poi[]> {
+  const cached = cache.get(key);
+  if (cached) return Promise.resolve(cached);
+  const existing = pending.get(key);
+  if (existing) return existing;
+  const request = load()
+    .then((list) => {
+      cache.set(key, list);
+      return list;
+    })
+    .finally(() => pending.delete(key));
+  pending.set(key, request);
+  return request;
+}
 
 async function runPlaces(
   lat: number,
@@ -22,12 +39,15 @@ async function runPlaces(
   radius: number,
   categoryIds: string[],
   kind: "hotel" | "restaurant",
+  pageSize: number,
 ): Promise<Poi[]> {
   const params = new PlacesQueryParameters({
+    apiKey: esriConfig.apiKey || undefined,
     point: new Point({ longitude: lon, latitude: lat }),
     radius,
     categoryIds,
-    pageSize: 20,
+    icon: null,
+    pageSize,
   });
 
   const result = await queryPlacesNearPoint(params);
@@ -60,11 +80,9 @@ export async function fetchHotels(
   radius = 1500,
 ): Promise<Poi[]> {
   const key = `hotels:${stadiumId}:${radius}`;
-  if (cache.has(key)) return cache.get(key)!;
-  // ArcGIS Places category: Travel and Transportation > Lodging
-  const list = (await runPlaces(lat, lon, radius, ["19009"], "hotel")).slice(0, 10);
-  cache.set(key, list);
-  return list;
+  return cachedPoiRequest(key, () =>
+    runPlaces(lat, lon, radius, ["4bf58dd8d48988d1fa931735"], "hotel", 10),
+  );
 }
 
 export async function fetchRestaurants(
@@ -74,11 +92,9 @@ export async function fetchRestaurants(
   radius = 1500,
 ): Promise<Poi[]> {
   const key = `restaurants:${stadiumId}:${radius}`;
-  if (cache.has(key)) return cache.get(key)!;
-  // ArcGIS Places category: Dining and Drinking
-  const list = (await runPlaces(lat, lon, radius, ["13000"], "restaurant")).slice(0, 15);
-  cache.set(key, list);
-  return list;
+  return cachedPoiRequest(key, () =>
+    runPlaces(lat, lon, radius, ["4d4b7105d754a06374d81259"], "restaurant", 15),
+  );
 }
 
 export function bookingUrl(hotelName: string): string {
