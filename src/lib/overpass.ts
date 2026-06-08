@@ -1,6 +1,7 @@
 import { queryPlacesNearPoint } from "@arcgis/core/rest/places";
 import PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
 import Point from "@arcgis/core/geometry/Point";
+import esriConfig from "@arcgis/core/config";
 
 export interface Poi {
   id: string;
