@@ -36,7 +36,7 @@ const dotSvg = (color: string) => {
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 };
 
-type GraphicHit = { graphic?: Graphic };
+type HitWithGraphic = { graphic?: Graphic };
 
 interface Props {
   selectedId: string | null;
@@ -125,16 +125,17 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
 
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
-      const hit = r.results.find((result): result is GraphicHit => {
-        const maybeHit = result as GraphicHit;
+      const hit = r.results.find((result) => {
+        const maybeHit = result as HitWithGraphic;
         return maybeHit.graphic?.layer === layer;
       });
-      if (hit?.graphic) {
+      const graphic = (hit as HitWithGraphic | undefined)?.graphic;
+      if (graphic) {
         view.openPopup({
-          features: [hit.graphic],
+          features: [graphic],
           location: e.mapPoint,
         });
-        onSelect(hit.graphic.attributes as Stadium);
+        onSelect(graphic.attributes as Stadium);
       }
     });
 
@@ -149,7 +150,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
     const view = viewRef.current;
     const layer = layerRef.current;
     if (!layer) return;
-    layer.graphics.forEach((g: any) => {
+    layer.graphics.forEach((g) => {
       const isSel = g.attributes.id === selectedId;
       g.symbol = new PictureMarkerSymbol({
         url: pinSvg(isSel ? PRIMARY : ACCENT),
@@ -159,7 +160,7 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       });
     });
     if (view && selectedId) {
-      const graphic = layer.graphics.find((g: any) => g.attributes.id === selectedId);
+      const graphic = layer.graphics.find((g) => g.attributes.id === selectedId);
       if (graphic && graphic.geometry) {
         view.openPopup({
           features: [graphic],
@@ -188,12 +189,19 @@ export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [] 
       const g = new Graphic({
         geometry: new Point({ longitude: p.lon, latitude: p.lat }),
         symbol: new PictureMarkerSymbol({ url: dotSvg(color), width: 18, height: 18 }),
-        attributes: { id: p.id, name: p.name, kind: p.kind, cuisine: p.cuisine, address: p.address },
+        attributes: {
+          id: p.id,
+          name: p.name,
+          kind: p.kind,
+          cuisine: p.cuisine,
+          address: p.address,
+        },
         popupTemplate: {
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
+            wrap.style.cssText =
+              "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
             const badge = document.createElement("div");
             badge.style.cssText = `display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:6px;`;
             badge.textContent = p.kind;
