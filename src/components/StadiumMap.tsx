@@ -65,6 +65,7 @@ export default function StadiumMap({
   const directionsRef = useRef<Directions | null>(null);
   const routeLayerRef = useRef<RouteLayer | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const fetchKey = useServerFn(getArcgisKey);
 
   useEffect(() => {
@@ -168,7 +169,7 @@ export default function StadiumMap({
       routeLayerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiKey]);
+  }, [apiKey, reloadKey]);
 
   useEffect(() => {
     const view = viewRef.current;
@@ -303,5 +304,22 @@ export default function StadiumMap({
     );
   }
 
-  return <div ref={containerRef} className="absolute inset-0 h-full min-h-screen w-full" />;
+  return (
+    <>
+      <div
+        key={reloadKey}
+        ref={containerRef}
+        className="absolute inset-0 h-full min-h-screen w-full"
+      />
+      <button
+        type="button"
+        onClick={() => setReloadKey((k) => k + 1)}
+        className="absolute right-3 bottom-3 z-10 rounded-md bg-white/95 px-3 py-2 text-xs font-semibold text-slate-800 shadow-md ring-1 ring-black/10 hover:bg-white"
+        aria-label="Reload map"
+        title="Reload map"
+      >
+        ↻ Reload map
+      </button>
+    </>
+  );
 }
