@@ -274,7 +274,7 @@ export default function StadiumMap({
         visibleElements: {
           saveAsButton: false,
           saveButton: false,
-          layerDetailsLink: false,
+          layerDetails: false,
           printButton: false,
         },
       });
