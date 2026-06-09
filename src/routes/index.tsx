@@ -3,6 +3,7 @@ import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import StadiumDetail from "@/components/StadiumDetail";
 import type { Poi } from "@/lib/overpass";
+import type { FanZone } from "@/data/fanzones";
 import { ChevronLeft, ChevronRight, List, MapPin, X } from "lucide-react";
 
 const StadiumMap = lazy(() => import("@/components/StadiumMap"));
@@ -31,16 +32,18 @@ function Index() {
   const [flyToCity, setFlyToCity] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [pois, setPois] = useState<Poi[]>([]);
-  const [poiKind, setPoiKind] = useState<"hotels" | "eatdrink" | null>(null);
+  const [poiKind, setPoiKind] = useState<"hotels" | "eatdrink" | "fanzones" | null>(null);
+  const [fanzones, setFanzones] = useState<FanZone[]>([]);
   const [panelOpen, setPanelOpen] = useState(true);
   const [showList, setShowList] = useState(true);
   useEffect(() => setMounted(true), []);
 
   const handlePoisChange = useCallback((next: Poi[]) => setPois(next), []);
   const handlePoiKindChange = useCallback(
-    (k: "hotels" | "eatdrink" | null) => setPoiKind(k),
+    (k: "hotels" | "eatdrink" | "fanzones" | null) => setPoiKind(k),
     [],
   );
+  const handleFanzonesChange = useCallback((zones: FanZone[]) => setFanzones(zones), []);
 
   const onSelect = (s: Stadium) => {
     setSelected(s);
@@ -72,6 +75,7 @@ function Index() {
               flyToCity={flyToCity}
               pois={pois}
               poiKind={poiKind}
+              fanzones={fanzones}
             />
           </Suspense>
         ) : (
@@ -147,6 +151,7 @@ function Index() {
                 stadium={selected}
                 onPoisChange={handlePoisChange}
                 onPoiKindChange={handlePoiKindChange}
+                onFanzonesChange={handleFanzonesChange}
               />
             )}
           </div>
