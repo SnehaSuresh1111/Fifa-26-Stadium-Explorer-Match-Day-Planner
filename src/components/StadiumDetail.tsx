@@ -17,6 +17,7 @@ import {
 import { stadiums, type Stadium } from "@/data/stadiums";
 import { transportData, googleMapsTransitUrl, type TransportMode } from "@/data/transport";
 import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
+import DirectionsPanel from "@/components/DirectionsPanel";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants";
 
@@ -34,11 +35,9 @@ const modeIcon: Record<
 export default function StadiumDetail({
   stadium,
   onPoisChange,
-  onShowDirections,
 }: {
   stadium: Stadium | null;
   onPoisChange?: (pois: Poi[]) => void;
-  onShowDirections?: () => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [hotels, setHotels] = useState<Poi[]>([]);
@@ -144,7 +143,7 @@ export default function StadiumDetail({
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
         {tab === "transport" && (
-          <TransportTab stadium={stadium} onShowDirections={onShowDirections} />
+          <TransportTab stadium={stadium} />
         )}
         {tab === "hotels" && (
           <PoiList
@@ -223,22 +222,16 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
-function TransportTab({
-  stadium,
-  onShowDirections,
-}: {
-  stadium: Stadium;
-  onShowDirections?: () => void;
-}) {
+function TransportTab({ stadium }: { stadium: Stadium }) {
   const data = transportData[stadium.id];
   return (
     <div className="space-y-3">
-      <button
-        onClick={() => onShowDirections?.()}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-primary px-4 py-3 text-sm font-bold text-white shadow-glow transition hover:opacity-90"
-      >
-        <Navigation size={16} /> Get Directions
-      </button>
+      <div>
+        <div className="mb-2 flex items-center gap-2 px-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+          <Navigation size={12} /> Live Directions
+        </div>
+        <DirectionsPanel stadium={stadium} />
+      </div>
 
       {data.options.map((opt, i) => {
         const Icon = modeIcon[opt.mode];
