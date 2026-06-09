@@ -12,7 +12,7 @@ export interface Poi {
   address?: string;
   cuisine?: string;
   stars?: string;
-  distance: number; // metres
+  distance: number; // meters from ArcGIS Places
   rating?: number; // 0-10 from Places service
   price?: number; // 1-4 ($ - $$$$)
   kind: "hotel" | "restaurant";
@@ -24,6 +24,10 @@ export interface Poi {
 
 const cache = new Map<string, Poi[]>();
 const pending = new Map<string, Promise<Poi[]>>();
+const METERS_PER_MILE = 1609.344;
+const CATEGORY_LODGING = "63be6904847c3692a84b9c25";
+const CATEGORY_DINING_DRINKING = "63be6904847c3692a84b9bb5";
+const CATEGORY_SPORTS_BAR = "4bf58dd8d48988d11d941735";
 
 function cachedPoiRequest(key: string, load: () => Promise<Poi[]>): Promise<Poi[]> {
   const cached = cache.get(key);
@@ -75,8 +79,7 @@ async function runPlaces(
       let subKind: Poi["subKind"];
       if (kind === "restaurant") {
         const l = (catLabel || "").toLowerCase();
-        if (l.includes("bar") || l.includes("pub") || l.includes("brewery"))
-          subKind = "sports_bar";
+        if (catId === CATEGORY_SPORTS_BAR || l.includes("sports bar")) subKind = "sports_bar";
         else if (l.includes("cafe") || l.includes("coffee")) subKind = "cafe";
         else subKind = "restaurant";
       }
@@ -126,12 +129,12 @@ export async function fetchHotels(
   stadiumId: string,
   lat: number,
   lon: number,
-  radius = 1500,
+  radiusMiles = 1.5,
 ): Promise<Poi[]> {
-  const key = `hotels:${stadiumId}:${radius}`;
+  const radiusMeters = Math.round(radiusMiles * METERS_PER_MILE);
+  const key = `hotels:${stadiumId}:${radiusMiles}`;
   return cachedPoiRequest(key, () =>
-    // 19009 = Lodging (hotels, hostels, motels, resorts). 17000 is Retail.
-    runPlaces(lat, lon, radius, ["19009"], "hotel", 15),
+    runPlaces(lat, lon, radiusMeters, [CATEGORY_LODGING], "hotel", 15),
   );
 }
 
@@ -139,12 +142,12 @@ export async function fetchRestaurants(
   stadiumId: string,
   lat: number,
   lon: number,
-  radius = 1500,
+  radiusMiles = 1.5,
 ): Promise<Poi[]> {
-  const key = `eatdrink:${stadiumId}:${radius}`;
+  const radiusMeters = Math.round(radiusMiles * METERS_PER_MILE);
+  const key = `eatdrink:${stadiumId}:${radiusMiles}`;
   return cachedPoiRequest(key, () =>
-    // 13000 = Dining and Drinking (restaurants, bars, cafés).
-    runPlaces(lat, lon, radius, ["13000"], "restaurant", 20),
+    runPlaces(lat, lon, radiusMeters, [CATEGORY_DINING_DRINKING], "restaurant", 20),
   );
 }
 
