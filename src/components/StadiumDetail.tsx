@@ -39,8 +39,8 @@ export default function StadiumDetail({
   onFanzonesChange?: (zones: FanZone[]) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
-  const [hotelRadius, setHotelRadius] = useState<Radius>(1500);
-  const [eatRadius, setEatRadius] = useState<Radius>(1500);
+  const [hotelRadius, setHotelRadius] = useState<Radius>(1.5);
+  const [eatRadius, setEatRadius] = useState<Radius>(1.5);
   const [hotels, setHotels] = useState<Poi[]>([]);
   const [restaurants, setRestaurants] = useState<Poi[]>([]);
   const [loadingHotels, setLoadingHotels] = useState(false);
