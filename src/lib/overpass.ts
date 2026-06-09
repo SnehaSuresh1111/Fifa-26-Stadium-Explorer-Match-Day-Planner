@@ -108,13 +108,18 @@ async function runPlaces(
         const params2 = new FetchPlaceParameters({
           apiKey: esriConfig.apiKey || undefined,
           placeId: poi.id,
-          requestedFields: ["address", "rating", "price"],
+          requestedFields: ["address", "rating", "rating:price"],
         });
         const detail: any = await fetchPlace(params2);
         const place = detail?.placeDetails ?? detail;
         const address = place?.address?.streetAddress ?? place?.address?.designatedMarketArea;
         const rating = typeof place?.rating?.user === "number" ? place.rating.user : undefined;
-        const price = typeof place?.price === "number" ? place.price : undefined;
+        const price =
+          typeof place?.rating?.price === "number"
+            ? place.rating.price
+            : typeof place?.price === "number"
+              ? place.price
+              : undefined;
         return { ...poi, address, rating, price };
       } catch (err) {
         console.warn("[Places] fetchPlace enrichment failed", poi.id, err);
