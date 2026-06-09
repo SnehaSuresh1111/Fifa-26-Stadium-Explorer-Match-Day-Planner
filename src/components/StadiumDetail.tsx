@@ -14,13 +14,15 @@ import {
   Beer,
   Coffee,
   Utensils,
+  PartyPopper,
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import { transportData } from "@/data/transport";
 import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
+import { fanzones, type FanZone } from "@/data/fanzones";
 import DirectionsPanel from "@/components/DirectionsPanel";
 
-type Tab = "overview" | "transport" | "hotels" | "restaurants";
+type Tab = "overview" | "transport" | "hotels" | "restaurants" | "fanzones";
 type EatFilter = "all" | "restaurant" | "sports_bar" | "cafe";
 const RADII = [1000, 1500, 3000] as const;
 type Radius = (typeof RADII)[number];
@@ -29,10 +31,12 @@ export default function StadiumDetail({
   stadium,
   onPoisChange,
   onPoiKindChange,
+  onFanzonesChange,
 }: {
   stadium: Stadium | null;
   onPoisChange?: (pois: Poi[]) => void;
-  onPoiKindChange?: (kind: "hotels" | "eatdrink" | null) => void;
+  onPoiKindChange?: (kind: "hotels" | "eatdrink" | "fanzones" | null) => void;
+  onFanzonesChange?: (zones: FanZone[]) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   const [hotelRadius, setHotelRadius] = useState<Radius>(1500);
@@ -54,7 +58,8 @@ export default function StadiumDetail({
     setError(null);
     onPoisChange?.([]);
     onPoiKindChange?.(null);
-  }, [stadium?.id, onPoisChange, onPoiKindChange]);
+    onFanzonesChange?.([]);
+  }, [stadium?.id, onPoisChange, onPoiKindChange, onFanzonesChange]);
 
   // Fetch hotels when tab/radius changes
   useEffect(() => {
@@ -107,6 +112,7 @@ export default function StadiumDetail({
   useEffect(() => {
     if (tab === "hotels") onPoiKindChange?.("hotels");
     else if (tab === "restaurants") onPoiKindChange?.("eatdrink");
+    else if (tab === "fanzones") onPoiKindChange?.("fanzones");
     else onPoiKindChange?.(null);
   }, [tab, onPoiKindChange]);
 
@@ -117,6 +123,14 @@ export default function StadiumDetail({
       eatFilter === "all" ? restaurants : restaurants.filter((p) => p.subKind === eatFilter);
     onPoisChange?.(filtered);
   }, [eatFilter, restaurants, tab, onPoisChange]);
+
+  // Push fanzones for this city to parent when tab is active
+  const cityFanzones = stadium ? fanzones.filter((z) => z.cityId === stadium.city) : [];
+  useEffect(() => {
+    if (tab === "fanzones") onFanzonesChange?.(cityFanzones);
+    else onFanzonesChange?.([]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, stadium?.id]);
 
   if (!stadium) {
     return (
@@ -202,6 +216,7 @@ export default function StadiumDetail({
             setFilter={setEatFilter}
           />
         )}
+        {tab === "fanzones" && <FanZonesTab zones={cityFanzones} />}
       </div>
     </div>
   );
@@ -213,21 +228,22 @@ function TabBar({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
     { id: "transport", label: "Transport", Icon: Train },
     { id: "hotels", label: "Hotels", Icon: Hotel },
     { id: "restaurants", label: "Eat", Icon: UtensilsCrossed },
+    { id: "fanzones", label: "Fan Zones", Icon: PartyPopper },
   ];
   return (
     <div className="sticky top-0 z-10 mx-3 mt-2 rounded-2xl glass p-1 shadow-soft">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-5 gap-1">
         {tabs.map(({ id, label, Icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl px-2 py-2 text-[11px] font-semibold transition ${
+            className={`flex flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-[10px] font-semibold transition ${
               tab === id
                 ? "bg-gradient-primary text-white shadow-soft"
                 : "text-muted-foreground hover:bg-white/60"
             }`}
           >
-            <Icon size={16} />
+            <Icon size={15} />
             {label}
           </button>
         ))}
