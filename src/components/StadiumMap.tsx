@@ -89,44 +89,7 @@ export default function StadiumMap({
       center: [-95, 40],
       zoom: 3,
       ui: { components: ["zoom"] },
-      popup: {
-        dockEnabled: false,
-      },
     });
-
-    // Inject sleek popup overrides
-    const popupStyle = document.createElement("style");
-    popupStyle.textContent = `
-      .esri-popup__main-container {
-        border-radius: 10px !important;
-        box-shadow: 0 6px 24px -6px rgba(0,0,0,0.18) !important;
-        max-width: 200px !important;
-      }
-      .esri-popup__header {
-        padding: 8px 10px 4px !important;
-      }
-      .esri-popup__header-title {
-        font-size: 13px !important;
-        font-weight: 700 !important;
-        font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif !important;
-        letter-spacing: -0.01em !important;
-      }
-      .esri-popup__content {
-        padding: 0 10px 8px !important;
-      }
-      .esri-popup__pointer {
-        display: none !important;
-      }
-      .esri-popup__footer {
-        display: none !important;
-      }
-      .esri-popup__button {
-        width: 22px !important;
-        height: 22px !important;
-        font-size: 12px !important;
-      }
-    `;
-    containerRef.current.appendChild(popupStyle);
     view.ui.add(new Home({ view }), "top-left");
 
     const defaultSym = new PictureMarkerSymbol({
@@ -141,22 +104,6 @@ export default function StadiumMap({
         geometry: new Point({ longitude: s.longitude, latitude: s.latitude }),
         symbol: defaultSym.clone(),
         attributes: { ...s },
-        popupTemplate: {
-          title: "{name}",
-          content: () => {
-            const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;";
-            const loc = document.createElement("div");
-            loc.style.cssText = "color:var(--muted-foreground);font-weight:600;font-size:11px;margin-bottom:2px;";
-            loc.textContent = `${s.city}, ${s.country}`;
-            const cap = document.createElement("div");
-            cap.style.cssText = "color:var(--foreground);font-size:12px;";
-            cap.innerHTML = `Capacity <b>${s.capacity.toLocaleString()}</b>`;
-            wrap.appendChild(loc);
-            wrap.appendChild(cap);
-            return wrap;
-          },
-        },
       });
       layer.add(g);
     });
@@ -175,10 +122,6 @@ export default function StadiumMap({
       });
       const graphic = (hit as HitWithGraphic | undefined)?.graphic;
       if (graphic) {
-        view.openPopup({
-          features: [graphic],
-          location: e.mapPoint,
-        });
         onSelect(graphic.attributes as Stadium);
       }
     });
@@ -193,7 +136,6 @@ export default function StadiumMap({
   }, [apiKey, reloadKey]);
 
   useEffect(() => {
-    const view = viewRef.current;
     const layer = layerRef.current;
     if (!layer) return;
     layer.graphics.forEach((g) => {
@@ -205,15 +147,6 @@ export default function StadiumMap({
         yoffset: isSel ? 20 : 16,
       });
     });
-    if (view && selectedId) {
-      const graphic = layer.graphics.find((g) => g.attributes.id === selectedId);
-      if (graphic && graphic.geometry) {
-        view.openPopup({
-          features: [graphic],
-          location: graphic.geometry as Point,
-        });
-      }
-    }
   }, [selectedId]);
 
   useEffect(() => {
@@ -241,30 +174,6 @@ export default function StadiumMap({
           kind: p.kind,
           cuisine: p.cuisine,
           address: p.address,
-        },
-        popupTemplate: {
-          title: "{name}",
-          content: () => {
-            const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;font-size:12px;";
-            const badge = document.createElement("span");
-            badge.style.cssText = `display:inline-block;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:4px;`;
-            badge.textContent = p.kind;
-            wrap.appendChild(badge);
-            if (p.cuisine) {
-              const c = document.createElement("div");
-              c.style.cssText = "color:var(--muted-foreground);font-weight:600;text-transform:capitalize;font-size:11px;";
-              c.textContent = p.cuisine;
-              wrap.appendChild(c);
-            }
-            if (p.address) {
-              const a = document.createElement("div");
-              a.style.cssText = "color:var(--muted-foreground);font-size:11px;margin-top:2px;";
-              a.textContent = p.address;
-              wrap.appendChild(a);
-            }
-            return wrap;
-          },
         },
       });
       layer.add(g);
