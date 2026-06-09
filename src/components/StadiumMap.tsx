@@ -97,7 +97,6 @@ export default function StadiumMap({
       ui: { components: ["zoom"] },
       popup: {
         dockEnabled: false,
-        collapseEnabled: false,
         maxInlineWidth: 200,
       },
     });
