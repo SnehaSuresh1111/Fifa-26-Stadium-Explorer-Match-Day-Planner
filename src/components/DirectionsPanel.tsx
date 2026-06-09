@@ -33,6 +33,11 @@ const GEOCODE_URL = "https://geocode.arcgis.com/arcgis/rest/services/World/Geoco
 // cache travel modes across renders
 let travelModesCache: any[] | null = null;
 
+interface Suggestion {
+  text: string;
+  magicKey: string;
+}
+
 export default function DirectionsPanel({ stadium }: Props) {
   const [view, setView] = useState<MapView | null>(null);
   const [mode, setMode] = useState<ModeKey>("driving");
@@ -42,9 +47,54 @@ export default function DirectionsPanel({ stadium }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ miles: number; minutes: number } | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showSuggest, setShowSuggest] = useState(false);
   const layerRef = useRef<GraphicsLayer | null>(null);
+  const suggestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => subscribeMapView((v) => setView(v)), []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (!wrapRef.current?.contains(e.target as Node)) setShowSuggest(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
+
+  // Debounced suggestions
+  useEffect(() => {
+    if (suggestTimerRef.current) clearTimeout(suggestTimerRef.current);
+    const text = addressInput.trim();
+    if (text.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    suggestTimerRef.current = setTimeout(async () => {
+      try {
+        const apiKey = getApiKey() || undefined;
+        const res: any = await locator.suggestLocations(GEOCODE_URL, {
+          text,
+          location: new Point({ longitude: stadium.longitude, latitude: stadium.latitude }),
+          maxSuggestions: 6,
+          apiKey,
+        } as any);
+        const list: Suggestion[] = (res ?? []).map((s: any) => ({
+          text: s.text,
+          magicKey: s.magicKey,
+        }));
+        setSuggestions(list);
+        setShowSuggest(true);
+      } catch (err) {
+        console.warn("[Geocoder] suggest failed", err);
+      }
+    }, 250);
+    return () => {
+      if (suggestTimerRef.current) clearTimeout(suggestTimerRef.current);
+    };
+  }, [addressInput, stadium.longitude, stadium.latitude]);
 
   // Attach a graphics layer for the route line
   useEffect(() => {
@@ -99,15 +149,17 @@ export default function DirectionsPanel({ stadium }: Props) {
     );
   }
 
-  async function geocodeAddress() {
-    const text = addressInput.trim();
+  async function geocodeAddress(opts?: { text?: string; magicKey?: string }) {
+    const text = (opts?.text ?? addressInput).trim();
     if (!text) return;
+    setShowSuggest(false);
     setError(null);
     setBusy(true);
     try {
       const apiKey = getApiKey() || undefined;
       const candidates = await locator.addressToLocations(GEOCODE_URL, {
         address: { SingleLine: text },
+        ...(opts?.magicKey ? { magicKey: opts.magicKey } : {}),
         outFields: ["Match_addr"],
         maxLocations: 1,
         apiKey,
@@ -123,6 +175,7 @@ export default function DirectionsPanel({ stadium }: Props) {
       }
       setOrigin(c.location);
       setOriginLabel(c.address || text);
+      setAddressInput(c.address || text);
     } catch (e: any) {
       setError(`Geocoder error: ${e?.message ?? e}`);
     } finally {
@@ -171,9 +224,21 @@ export default function DirectionsPanel({ stadium }: Props) {
         setError("No route found.");
         return;
       }
-      const totalMiles = (r as any).directions?.totalLength ?? 0;
-      const totalMinutes = (r as any).directions?.totalDriveTime ?? 0;
-      setResult({ miles: totalMiles, minutes: totalMinutes });
+      // Route attributes are the source of truth — Total_Miles/Total_Kilometers and
+      // Total_TravelTime (driving), Total_TruckTravelTime, or Total_WalkTime.
+      const attrs: any = r.route.attributes ?? {};
+      const miles =
+        attrs.Total_Miles ??
+        (typeof attrs.Total_Kilometers === "number" ? attrs.Total_Kilometers * 0.621371 : 0) ??
+        (r as any).directions?.totalLength ??
+        0;
+      const minutes =
+        attrs.Total_TravelTime ??
+        attrs.Total_TruckTravelTime ??
+        attrs.Total_WalkTime ??
+        (r as any).directions?.totalDriveTime ??
+        0;
+      setResult({ miles, minutes });
 
       const layer = layerRef.current;
       if (layer) {
@@ -215,23 +280,54 @@ export default function DirectionsPanel({ stadium }: Props) {
 
   return (
     <div className="space-y-2 rounded-2xl bg-white/90 p-3 shadow-soft ring-1 ring-border">
-      <div className="flex gap-2">
-        <input
-          type="text"
-          value={addressInput}
-          onChange={(e) => setAddressInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && geocodeAddress()}
-          placeholder="Enter starting address"
-          className="flex-1 rounded-xl border border-border bg-white px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary"
-        />
-        <button
-          onClick={geocodeAddress}
-          disabled={busy || !addressInput.trim()}
-          className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-3 text-white shadow-soft disabled:opacity-50"
-          title="Search address"
-        >
-          <Search size={14} />
-        </button>
+      <div ref={wrapRef} className="relative">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={addressInput}
+            onChange={(e) => setAddressInput(e.target.value)}
+            onFocus={() => suggestions.length > 0 && setShowSuggest(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (suggestions[0]) {
+                  geocodeAddress({ text: suggestions[0].text, magicKey: suggestions[0].magicKey });
+                } else {
+                  geocodeAddress();
+                }
+              } else if (e.key === "Escape") {
+                setShowSuggest(false);
+              }
+            }}
+            placeholder="Enter starting address"
+            className="flex-1 rounded-xl border border-border bg-white px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary"
+          />
+          <button
+            onClick={() => geocodeAddress()}
+            disabled={busy || !addressInput.trim()}
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-primary px-3 text-white shadow-soft disabled:opacity-50"
+            title="Search address"
+          >
+            <Search size={14} />
+          </button>
+        </div>
+        {showSuggest && suggestions.length > 0 && (
+          <ul className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl bg-white p-1 text-xs shadow-glow ring-1 ring-border">
+            {suggestions.map((s) => (
+              <li key={s.magicKey + s.text}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() =>
+                    geocodeAddress({ text: s.text, magicKey: s.magicKey })
+                  }
+                  className="block w-full truncate rounded-lg px-2.5 py-1.5 text-left hover:bg-gradient-soft/40"
+                >
+                  {s.text}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <button
         onClick={useMyLocation}
