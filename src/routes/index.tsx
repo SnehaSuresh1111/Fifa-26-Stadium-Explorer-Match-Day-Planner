@@ -31,11 +31,16 @@ function Index() {
   const [flyToCity, setFlyToCity] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [pois, setPois] = useState<Poi[]>([]);
+  const [poiKind, setPoiKind] = useState<"hotels" | "eatdrink" | null>(null);
   const [panelOpen, setPanelOpen] = useState(true);
   const [showList, setShowList] = useState(true);
   useEffect(() => setMounted(true), []);
 
   const handlePoisChange = useCallback((next: Poi[]) => setPois(next), []);
+  const handlePoiKindChange = useCallback(
+    (k: "hotels" | "eatdrink" | null) => setPoiKind(k),
+    [],
+  );
 
   const onSelect = (s: Stadium) => {
     setSelected(s);
@@ -66,6 +71,7 @@ function Index() {
               onSelect={onSelect}
               flyToCity={flyToCity}
               pois={pois}
+              poiKind={poiKind}
             />
           </Suspense>
         ) : (
@@ -140,6 +146,7 @@ function Index() {
               <StadiumDetail
                 stadium={selected}
                 onPoisChange={handlePoisChange}
+                onPoiKindChange={handlePoiKindChange}
               />
             )}
           </div>

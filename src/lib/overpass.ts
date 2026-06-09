@@ -16,6 +16,10 @@ export interface Poi {
   rating?: number; // 0-10 from Places service
   price?: number; // 1-4 ($ - $$$$)
   kind: "hotel" | "restaurant";
+  categoryId?: string;
+  categoryLabel?: string;
+  /** finer classification for eat & drink layer */
+  subKind?: "restaurant" | "sports_bar" | "cafe";
 }
 
 const cache = new Map<string, Poi[]>();
@@ -43,6 +47,7 @@ async function runPlaces(
   categoryIds: string[],
   kind: "hotel" | "restaurant",
   pageSize: number,
+  searchText?: string,
 ): Promise<Poi[]> {
   const params = new PlacesQueryParameters({
     apiKey: esriConfig.apiKey || undefined,
@@ -52,6 +57,7 @@ async function runPlaces(
     icon: null,
     pageSize,
   });
+  if (searchText) (params as any).searchText = searchText;
 
   const result = await queryPlacesNearPoint(params);
   const items = result.results ?? [];
@@ -59,17 +65,29 @@ async function runPlaces(
     .map((p): Poi | null => {
       const loc = p.location;
       if (!loc) return null;
-      const cat = p.categories?.[0]?.label;
+      const cat = p.categories?.[0];
+      const catLabel = cat?.label;
+      const catId = (cat as any)?.categoryId as string | undefined;
+      let subKind: Poi["subKind"];
+      if (kind === "restaurant") {
+        const l = (catLabel || "").toLowerCase();
+        if (catId === "13003" || l.includes("bar") || l.includes("pub")) subKind = "sports_bar";
+        else if (l.includes("cafe") || l.includes("coffee")) subKind = "cafe";
+        else subKind = "restaurant";
+      }
       return {
         id: String(p.placeId ?? `${loc.x},${loc.y}`),
         name: p.name ?? "Unnamed",
         lat: loc.y,
         lon: loc.x,
         address: undefined,
-        cuisine: kind === "restaurant" ? cat : undefined,
+        cuisine: kind === "restaurant" ? catLabel : undefined,
         stars: undefined,
         distance: Math.round(p.distance ?? 0),
         kind,
+        categoryId: catId,
+        categoryLabel: catLabel,
+        subKind,
       };
     })
     .filter((x): x is Poi => x !== null)
@@ -106,7 +124,7 @@ export async function fetchHotels(
 ): Promise<Poi[]> {
   const key = `hotels:${stadiumId}:${radius}`;
   return cachedPoiRequest(key, () =>
-    runPlaces(lat, lon, radius, ["4bf58dd8d48988d1fa931735"], "hotel", 10),
+    runPlaces(lat, lon, radius, ["17000"], "hotel", 15),
   );
 }
 
@@ -116,17 +134,16 @@ export async function fetchRestaurants(
   lon: number,
   radius = 1500,
 ): Promise<Poi[]> {
-  const key = `restaurants:${stadiumId}:${radius}`;
+  const key = `eatdrink:${stadiumId}:${radius}`;
   return cachedPoiRequest(key, () =>
-    runPlaces(lat, lon, radius, ["4d4b7105d754a06374d81259"], "restaurant", 15),
+    runPlaces(lat, lon, radius, ["13000", "13003"], "restaurant", 15, "sports bar"),
   );
 }
 
-export function bookingUrl(hotelName: string, lat?: number, lon?: number): string {
-  const q = lat && lon ? `${hotelName} near ${lat.toFixed(4)},${lon.toFixed(4)}` : hotelName;
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+export function bookingUrl(hotelName: string): string {
+  return `https://www.booking.com/search.html?ss=${encodeURIComponent(hotelName)}`;
 }
 
-export function gmapsPlaceUrl(name: string, lat: number, lon: number): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${lat.toFixed(5)},${lon.toFixed(5)}`)}`;
+export function gmapsPlaceUrl(_name: string, lat: number, lon: number): string {
+  return `https://maps.google.com/?q=${lat},${lon}`;
 }

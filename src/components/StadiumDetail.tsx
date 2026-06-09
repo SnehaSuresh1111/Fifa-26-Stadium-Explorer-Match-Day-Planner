@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   User,
   MapPin,
@@ -11,6 +11,9 @@ import {
   ExternalLink,
   Info,
   Star,
+  Beer,
+  Coffee,
+  Utensils,
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import { transportData } from "@/data/transport";
@@ -18,19 +21,30 @@ import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } fr
 import DirectionsPanel from "@/components/DirectionsPanel";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants";
+type EatFilter = "all" | "restaurant" | "sports_bar" | "cafe";
+const RADII = [1000, 1500, 3000] as const;
+type Radius = (typeof RADII)[number];
 
 export default function StadiumDetail({
   stadium,
   onPoisChange,
+  onPoiKindChange,
 }: {
   stadium: Stadium | null;
   onPoisChange?: (pois: Poi[]) => void;
+  onPoiKindChange?: (kind: "hotels" | "eatdrink" | null) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
+  const [hotelRadius, setHotelRadius] = useState<Radius>(1500);
+  const [eatRadius, setEatRadius] = useState<Radius>(1500);
   const [hotels, setHotels] = useState<Poi[]>([]);
   const [restaurants, setRestaurants] = useState<Poi[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingHotels, setLoadingHotels] = useState(false);
+  const [loadingEat, setLoadingEat] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [eatFilter, setEatFilter] = useState<EatFilter>("all");
+  const hotelsCache = useRef(new Map<string, Poi[]>());
+  const eatCache = useRef(new Map<string, Poi[]>());
 
   // Reset to overview when stadium changes
   useEffect(() => {
@@ -39,40 +53,70 @@ export default function StadiumDetail({
     setRestaurants([]);
     setError(null);
     onPoisChange?.([]);
-  }, [stadium?.id, onPoisChange]);
+    onPoiKindChange?.(null);
+  }, [stadium?.id, onPoisChange, onPoiKindChange]);
 
-  // Fetch POIs lazily on tab open
+  // Fetch hotels when tab/radius changes
   useEffect(() => {
-    if (!stadium) return;
-    if (tab === "hotels" && hotels.length === 0) {
-      setLoading(true);
-      setError(null);
-      fetchHotels(stadium.id, stadium.latitude, stadium.longitude)
-        .then((list) => {
-          setHotels(list);
-          onPoisChange?.(list);
-        })
-        .catch((e) => setError(String(e)))
-        .finally(() => setLoading(false));
-    } else if (tab === "restaurants" && restaurants.length === 0) {
-      setLoading(true);
-      setError(null);
-      fetchRestaurants(stadium.id, stadium.latitude, stadium.longitude)
-        .then((list) => {
-          setRestaurants(list);
-          onPoisChange?.(list);
-        })
-        .catch((e) => setError(String(e)))
-        .finally(() => setLoading(false));
-    } else if (tab === "hotels") {
-      onPoisChange?.(hotels);
-    } else if (tab === "restaurants") {
-      onPoisChange?.(restaurants);
-    } else {
-      onPoisChange?.([]);
+    if (!stadium || tab !== "hotels") return;
+    const key = `${stadium.id}-hotels-${hotelRadius}`;
+    const cached = hotelsCache.current.get(key);
+    if (cached) {
+      setHotels(cached);
+      onPoisChange?.(cached);
+      return;
     }
+    setLoadingHotels(true);
+    setError(null);
+    fetchHotels(stadium.id, stadium.latitude, stadium.longitude, hotelRadius)
+      .then((list) => {
+        hotelsCache.current.set(key, list);
+        setHotels(list);
+        onPoisChange?.(list);
+      })
+      .catch((e) => setError(String(e)))
+      .finally(() => setLoadingHotels(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, stadium?.id]);
+  }, [tab, stadium?.id, hotelRadius]);
+
+  // Fetch eat & drink when tab/radius changes
+  useEffect(() => {
+    if (!stadium || tab !== "restaurants") return;
+    const key = `${stadium.id}-eatdrink-${eatRadius}`;
+    const cached = eatCache.current.get(key);
+    if (cached) {
+      setRestaurants(cached);
+      onPoisChange?.(cached);
+      return;
+    }
+    setLoadingEat(true);
+    setError(null);
+    fetchRestaurants(stadium.id, stadium.latitude, stadium.longitude, eatRadius)
+      .then((list) => {
+        const sorted = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        eatCache.current.set(key, sorted);
+        setRestaurants(sorted);
+        onPoisChange?.(sorted);
+      })
+      .catch((e) => setError(String(e)))
+      .finally(() => setLoadingEat(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, stadium?.id, eatRadius]);
+
+  // Tell parent which POI layer should be visible
+  useEffect(() => {
+    if (tab === "hotels") onPoiKindChange?.("hotels");
+    else if (tab === "restaurants") onPoiKindChange?.("eatdrink");
+    else onPoiKindChange?.(null);
+  }, [tab, onPoiKindChange]);
+
+  // Push current filtered list to map when filter changes on eat tab
+  useEffect(() => {
+    if (tab !== "restaurants") return;
+    const filtered =
+      eatFilter === "all" ? restaurants : restaurants.filter((p) => p.subKind === eatFilter);
+    onPoisChange?.(filtered);
+  }, [eatFilter, restaurants, tab, onPoisChange]);
 
   if (!stadium) {
     return (
@@ -133,21 +177,29 @@ export default function StadiumDetail({
           <TransportTab stadium={stadium} />
         )}
         {tab === "hotels" && (
-          <PoiList
-            kind="hotel"
+          <HotelsTab
             items={hotels}
-            loading={loading}
+            loading={loadingHotels}
             error={error}
-            emptyMessage="No hotels found nearby. Try expanding your search on Booking.com."
+            radius={hotelRadius}
+            setRadius={(r) => {
+              setHotels([]);
+              setHotelRadius(r);
+            }}
           />
         )}
         {tab === "restaurants" && (
-          <PoiList
-            kind="restaurant"
+          <EatTab
             items={restaurants}
-            loading={loading}
+            loading={loadingEat}
             error={error}
-            emptyMessage="No restaurants found within 1.5 km of the stadium."
+            radius={eatRadius}
+            setRadius={(r) => {
+              setRestaurants([]);
+              setEatRadius(r);
+            }}
+            filter={eatFilter}
+            setFilter={setEatFilter}
           />
         )}
       </div>
@@ -233,6 +285,116 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
+function RadiusToggle({
+  value,
+  onChange,
+}: {
+  value: Radius;
+  onChange: (r: Radius) => void;
+}) {
+  return (
+    <div className="inline-flex rounded-full bg-white/70 p-1 text-[11px] font-semibold ring-1 ring-border">
+      {RADII.map((r) => (
+        <button
+          key={r}
+          onClick={() => onChange(r)}
+          className={`rounded-full px-3 py-1 transition ${
+            value === r ? "bg-gradient-primary text-white shadow-soft" : "text-muted-foreground"
+          }`}
+        >
+          {r === 1000 ? "1km" : r === 1500 ? "1.5km" : "3km"}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function HotelsTab({
+  items,
+  loading,
+  error,
+  radius,
+  setRadius,
+}: {
+  items: Poi[];
+  loading: boolean;
+  error: string | null;
+  radius: Radius;
+  setRadius: (r: Radius) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
+        <RadiusToggle value={radius} onChange={setRadius} />
+      </div>
+      <PoiList
+        kind="hotel"
+        items={items}
+        loading={loading}
+        error={error}
+        emptyMessage="No hotels found nearby. Try a wider radius."
+      />
+    </div>
+  );
+}
+
+function EatTab({
+  items,
+  loading,
+  error,
+  radius,
+  setRadius,
+  filter,
+  setFilter,
+}: {
+  items: Poi[];
+  loading: boolean;
+  error: string | null;
+  radius: Radius;
+  setRadius: (r: Radius) => void;
+  filter: EatFilter;
+  setFilter: (f: EatFilter) => void;
+}) {
+  const filtered = filter === "all" ? items : items.filter((p) => p.subKind === filter);
+  const chips: { id: EatFilter; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
+    { id: "all", label: "All", Icon: Sparkles },
+    { id: "restaurant", label: "Restaurants", Icon: Utensils },
+    { id: "sports_bar", label: "Sports Bars", Icon: Beer },
+    { id: "cafe", label: "Cafés", Icon: Coffee },
+  ];
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
+        <RadiusToggle value={radius} onChange={setRadius} />
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {chips.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            onClick={() => setFilter(id)}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+              filter === id
+                ? "bg-gradient-primary text-white shadow-soft"
+                : "bg-white/70 text-muted-foreground hover:bg-white"
+            }`}
+          >
+            <Icon size={11} /> {label}
+          </button>
+        ))}
+      </div>
+      <PoiList
+        kind="restaurant"
+        items={filtered}
+        loading={loading}
+        error={error}
+        emptyMessage="No places match this filter. Try another category or wider radius."
+      />
+    </div>
+  );
+}
+
 function PoiList({
   kind,
   items,
@@ -282,7 +444,7 @@ function PoiList({
 function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
   const href =
     kind === "hotel"
-      ? bookingUrl(poi.name, poi.lat, poi.lon)
+      ? bookingUrl(poi.name)
       : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
   const label = kind === "hotel" ? "Check Prices" : "View on Map";
   // Convert 0-10 rating to 0-5 stars
