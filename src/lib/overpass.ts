@@ -1,5 +1,6 @@
-import { queryPlacesNearPoint } from "@arcgis/core/rest/places";
+import { queryPlacesNearPoint, fetchPlace } from "@arcgis/core/rest/places";
 import PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
+import FetchPlaceParameters from "@arcgis/core/rest/support/FetchPlaceParameters";
 import Point from "@arcgis/core/geometry/Point";
 import esriConfig from "@arcgis/core/config";
 
@@ -12,6 +13,8 @@ export interface Poi {
   cuisine?: string;
   stars?: string;
   distance: number; // metres
+  rating?: number; // 0-10 from Places service
+  price?: number; // 1-4 ($ - $$$$)
   kind: "hotel" | "restaurant";
 }
 
@@ -52,7 +55,7 @@ async function runPlaces(
 
   const result = await queryPlacesNearPoint(params);
   const items = result.results ?? [];
-  return items
+  const base = items
     .map((p): Poi | null => {
       const loc = p.location;
       if (!loc) return null;
@@ -71,6 +74,28 @@ async function runPlaces(
     })
     .filter((x): x is Poi => x !== null)
     .sort((a, b) => a.distance - b.distance);
+
+  // Enrich with rating / price / address via fetchPlace (one call per item, cached upstream)
+  const enriched = await Promise.all(
+    base.map(async (poi) => {
+      try {
+        const params2 = new FetchPlaceParameters({
+          apiKey: esriConfig.apiKey || undefined,
+          placeId: poi.id,
+          requestedFields: ["address", "rating", "price"],
+        });
+        const detail: any = await fetchPlace(params2);
+        const place = detail?.placeDetails ?? detail;
+        const address = place?.address?.streetAddress ?? place?.address?.designatedMarketArea;
+        const rating = typeof place?.rating?.user === "number" ? place.rating.user : undefined;
+        const price = typeof place?.price === "number" ? place.price : undefined;
+        return { ...poi, address, rating, price };
+      } catch {
+        return poi;
+      }
+    }),
+  );
+  return enriched;
 }
 
 export async function fetchHotels(
@@ -97,10 +122,11 @@ export async function fetchRestaurants(
   );
 }
 
-export function bookingUrl(hotelName: string): string {
-  return `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotelName)}`;
+export function bookingUrl(hotelName: string, lat?: number, lon?: number): string {
+  const q = lat && lon ? `${hotelName} near ${lat.toFixed(4)},${lon.toFixed(4)}` : hotelName;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 }
 
 export function gmapsPlaceUrl(name: string, lat: number, lon: number): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=&center=${lat},${lon}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name} ${lat.toFixed(5)},${lon.toFixed(5)}`)}`;
 }
