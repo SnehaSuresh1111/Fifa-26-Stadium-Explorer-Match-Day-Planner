@@ -4,7 +4,7 @@ import { stadiums, type Stadium } from "@/data/stadiums";
 import StadiumDetail from "@/components/StadiumDetail";
 import type { Poi } from "@/lib/overpass";
 import type { FanZone } from "@/data/fanzones";
-import { ChevronLeft, ChevronRight, List, MapPin, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Loader2, MapPin, X } from "lucide-react";
 
 const StadiumMap = lazy(() => import("@/components/StadiumMap"));
 
@@ -59,14 +59,12 @@ function Index() {
   };
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden">
-      <main className="relative flex-1">
+    <div className="relative flex h-dvh w-screen overflow-hidden">
+      <main className="relative flex-1 min-w-0">
         {mounted ? (
           <Suspense
             fallback={
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Loading map…
-              </div>
+              <MapLoading />
             }
           >
             <StadiumMap
@@ -79,15 +77,13 @@ function Index() {
             />
           </Suspense>
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            Loading map…
-          </div>
+          <MapLoading />
         )}
 
         {!panelOpen && (
           <button
             onClick={() => setPanelOpen(true)}
-            className="absolute right-3 top-3 z-20 flex items-center gap-2 rounded-2xl bg-gradient-primary px-3 py-2 text-sm font-semibold text-white shadow-glow"
+            className="absolute right-3 top-3 z-20 flex items-center gap-2 rounded-2xl bg-gradient-primary px-3 py-2 text-sm font-semibold text-white shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2"
             aria-label="Open panel"
           >
             <ChevronLeft size={16} /> Stadiums
@@ -98,8 +94,8 @@ function Index() {
       {/* Unified side panel: header + stadium list + tabs */}
       <aside
         className={`${
-          panelOpen ? "translate-x-0" : "translate-x-full"
-        } absolute right-0 top-0 z-30 h-full w-full max-w-[400px] p-3 transition-transform duration-300 sm:w-[380px]`}
+          panelOpen ? "translate-x-0" : "translate-x-full sm:translate-x-0 sm:w-0 sm:p-0"
+        } absolute right-0 top-0 z-30 h-full w-full max-w-[400px] p-3 transition-all duration-300 sm:static sm:h-auto sm:shrink-0 sm:self-stretch sm:w-[380px]`}
       >
         <div className="flex h-full flex-col overflow-hidden rounded-3xl glass shadow-glow">
           {/* Brand header */}
@@ -119,7 +115,7 @@ function Index() {
             </div>
             <button
               onClick={() => setPanelOpen(false)}
-              className="rounded-full p-1.5 text-muted-foreground hover:bg-white/60"
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               aria-label="Close panel"
             >
               <ChevronRight size={18} />
@@ -184,26 +180,34 @@ function StadiumList({
       <div className="mt-4 space-y-5">
         {order.map((country) => (
           <div key={country}>
-            <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              {country}
+            <div className="sticky top-0 z-[1] -mx-4 mb-2 flex items-center gap-2 bg-white/70 px-4 py-1.5 backdrop-blur">
+              <span className="h-3 w-1 rounded-full bg-gradient-primary" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                {country}
+              </span>
+              <span className="ml-auto text-[10px] text-muted-foreground">
+                {grouped[country]?.length ?? 0}
+              </span>
             </div>
-            <div className="space-y-2">
+            <ul className="space-y-2">
               {grouped[country]?.map((s) => {
                 const active = s.id === selectedId;
                 return (
+                  <li key={s.id}>
                   <button
-                    key={s.id}
                     onClick={() => onPick(s)}
-                    className={`flex w-full items-center gap-3 rounded-2xl p-2 text-left transition ${
+                    aria-pressed={active}
+                    className={`flex w-full items-center gap-3 rounded-2xl p-2 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
                       active
-                        ? "bg-gradient-primary text-white shadow-soft"
-                        : "bg-white/70 hover:bg-white"
+                        ? "bg-gradient-primary text-white shadow-soft ring-2 ring-primary/30"
+                        : "bg-white/70 ring-1 ring-border hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
                     }`}
                   >
                     <img
                       src={s.imageUrl}
                       alt={s.name}
                       className="h-12 w-16 shrink-0 rounded-xl object-cover"
+                      loading="lazy"
                     />
                     <div className="min-w-0 flex-1">
                       <div
@@ -222,12 +226,22 @@ function StadiumList({
                       </div>
                     </div>
                   </button>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function MapLoading() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+      <Loader2 size={28} className="animate-spin text-primary" />
+      <div className="text-xs uppercase tracking-[0.18em]">Loading map</div>
     </div>
   );
 }
