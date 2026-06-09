@@ -4,33 +4,20 @@ import {
   MapPin,
   Sparkles,
   Train,
-  Bus,
-  Footprints,
-  Car,
   Navigation,
   Hotel,
   UtensilsCrossed,
   Loader2,
   ExternalLink,
   Info,
+  Star,
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
-import { transportData, googleMapsTransitUrl, type TransportMode } from "@/data/transport";
+import { transportData } from "@/data/transport";
 import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
 import DirectionsPanel from "@/components/DirectionsPanel";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants";
-
-const modeIcon: Record<
-  TransportMode,
-  React.ComponentType<{ size?: number; className?: string }>
-> = {
-  train: Train,
-  bus: Bus,
-  shuttle: Bus,
-  walk: Footprints,
-  rideshare: Car,
-};
 
 export default function StadiumDetail({
   stadium,
@@ -233,27 +220,6 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
         <DirectionsPanel stadium={stadium} />
       </div>
 
-      {data.options.map((opt, i) => {
-        const Icon = modeIcon[opt.mode];
-        return (
-          <div key={i} className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-soft text-primary">
-                <Icon size={18} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="truncate text-sm font-bold text-foreground">{opt.provider}</div>
-                <div className="truncate text-xs text-muted-foreground">{opt.line}</div>
-              </div>
-            </div>
-            <div className="mt-2 flex justify-between text-xs">
-              <span className="font-semibold text-primary">{opt.duration}</span>
-              <span className="text-muted-foreground">{opt.cost}</span>
-            </div>
-          </div>
-        );
-      })}
-
       <div className="flex gap-2 rounded-2xl bg-gradient-soft/40 p-3 ring-1 ring-primary/20">
         <Info size={16} className="mt-0.5 shrink-0 text-primary" />
         <div className="text-xs text-foreground">
@@ -263,10 +229,6 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
           <div className="mt-1">{data.matchdayNote}</div>
         </div>
       </div>
-
-      <p className="pt-1 text-center text-[10px] text-muted-foreground">
-        Transport info curated for FIFA 2026 matchdays.
-      </p>
     </div>
   );
 }
@@ -318,8 +280,16 @@ function PoiList({
 }
 
 function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
-  const href = kind === "hotel" ? bookingUrl(poi.name) : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
+  const href =
+    kind === "hotel"
+      ? bookingUrl(poi.name, poi.lat, poi.lon)
+      : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
   const label = kind === "hotel" ? "Check Prices" : "View on Map";
+  // Convert 0-10 rating to 0-5 stars
+  const stars =
+    typeof poi.rating === "number" ? Math.round((poi.rating / 2) * 10) / 10 : undefined;
+  const priceStr =
+    typeof poi.price === "number" ? "$".repeat(Math.max(1, Math.min(4, poi.price))) : undefined;
   return (
     <div className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
       <div className="flex items-start justify-between gap-2">
@@ -327,8 +297,16 @@ function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
           <div className="truncate text-sm font-bold text-foreground">{poi.name}</div>
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
             <span className="font-semibold text-primary">{formatDistance(poi.distance)}</span>
-            {poi.cuisine && <span className="capitalize">· {poi.cuisine}</span>}
-            {poi.stars && <span>· {poi.stars}★</span>}
+            {stars !== undefined && (
+              <span className="inline-flex items-center gap-0.5 text-amber-500">
+                · <Star size={10} className="fill-amber-500 stroke-amber-500" />
+                <span className="font-semibold">{stars.toFixed(1)}</span>
+              </span>
+            )}
+            {priceStr && <span className="font-semibold">· {priceStr}</span>}
+            {kind === "restaurant" && poi.cuisine && (
+              <span className="capitalize">· {poi.cuisine}</span>
+            )}
           </div>
           {poi.address && (
             <div className="mt-1 truncate text-[11px] text-muted-foreground">{poi.address}</div>
@@ -348,5 +326,10 @@ function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
 }
 
 function formatDistance(m: number): string {
-  return m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`;
+  const miles = m / 1609.344;
+  if (miles < 0.1) {
+    const feet = Math.round(m * 3.28084);
+    return `${feet} ft`;
+  }
+  return `${miles.toFixed(2)} mi`;
 }
