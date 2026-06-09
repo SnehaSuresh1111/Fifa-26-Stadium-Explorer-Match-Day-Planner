@@ -47,7 +47,6 @@ async function runPlaces(
   categoryIds: string[],
   kind: "hotel" | "restaurant",
   pageSize: number,
-  searchText?: string,
 ): Promise<Poi[]> {
   const params = new PlacesQueryParameters({
     apiKey: esriConfig.apiKey || undefined,
@@ -57,9 +56,14 @@ async function runPlaces(
     icon: null,
     pageSize,
   });
-  if (searchText) (params as any).searchText = searchText;
 
-  const result = await queryPlacesNearPoint(params);
+  let result;
+  try {
+    result = await queryPlacesNearPoint(params);
+  } catch (err) {
+    console.error("[Places] queryPlacesNearPoint failed", { categoryIds, err });
+    throw err;
+  }
   const items = result.results ?? [];
   const base = items
     .map((p): Poi | null => {
@@ -71,7 +75,8 @@ async function runPlaces(
       let subKind: Poi["subKind"];
       if (kind === "restaurant") {
         const l = (catLabel || "").toLowerCase();
-        if (catId === "13003" || l.includes("bar") || l.includes("pub")) subKind = "sports_bar";
+        if (l.includes("bar") || l.includes("pub") || l.includes("brewery"))
+          subKind = "sports_bar";
         else if (l.includes("cafe") || l.includes("coffee")) subKind = "cafe";
         else subKind = "restaurant";
       }
@@ -108,7 +113,8 @@ async function runPlaces(
         const rating = typeof place?.rating?.user === "number" ? place.rating.user : undefined;
         const price = typeof place?.price === "number" ? place.price : undefined;
         return { ...poi, address, rating, price };
-      } catch {
+      } catch (err) {
+        console.warn("[Places] fetchPlace enrichment failed", poi.id, err);
         return poi;
       }
     }),
@@ -124,7 +130,8 @@ export async function fetchHotels(
 ): Promise<Poi[]> {
   const key = `hotels:${stadiumId}:${radius}`;
   return cachedPoiRequest(key, () =>
-    runPlaces(lat, lon, radius, ["17000"], "hotel", 15),
+    // 19009 = Lodging (hotels, hostels, motels, resorts). 17000 is Retail.
+    runPlaces(lat, lon, radius, ["19009"], "hotel", 15),
   );
 }
 
@@ -136,7 +143,8 @@ export async function fetchRestaurants(
 ): Promise<Poi[]> {
   const key = `eatdrink:${stadiumId}:${radius}`;
   return cachedPoiRequest(key, () =>
-    runPlaces(lat, lon, radius, ["13000", "13003"], "restaurant", 15, "sports bar"),
+    // 13000 = Dining and Drinking (restaurants, bars, cafés).
+    runPlaces(lat, lon, radius, ["13000"], "restaurant", 20),
   );
 }
 
