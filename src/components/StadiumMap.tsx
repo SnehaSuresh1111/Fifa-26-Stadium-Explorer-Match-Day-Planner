@@ -7,14 +7,12 @@ import Point from "@arcgis/core/geometry/Point";
 import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Home from "@arcgis/core/widgets/Home";
 import esriConfig from "@arcgis/core/config";
-import RouteLayer from "@arcgis/core/layers/RouteLayer";
-import Directions from "@arcgis/core/widgets/Directions";
-import Stop from "@arcgis/core/rest/support/Stop";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import type { Poi } from "@/lib/overpass";
 import { useServerFn } from "@tanstack/react-start";
 import { getArcgisKey } from "@/lib/arcgis.functions";
+import { setMapView } from "@/lib/arcgisMapHolder";
 
 const ACCENT = "#C0392B";
 const PRIMARY = "#1C4E8A";
@@ -47,7 +45,6 @@ interface Props {
   onSelect: (s: Stadium) => void;
   flyToCity: string | null;
   pois?: Poi[];
-  directionsFor?: Stadium | null;
 }
 
 export default function StadiumMap({
@@ -55,15 +52,12 @@ export default function StadiumMap({
   onSelect,
   flyToCity,
   pois = [],
-  directionsFor,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
   const poiLayerRef = useRef<GraphicsLayer | null>(null);
   const mapRef = useRef<Map | null>(null);
-  const directionsRef = useRef<Directions | null>(null);
-  const routeLayerRef = useRef<RouteLayer | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const fetchKey = useServerFn(getArcgisKey);
@@ -171,6 +165,7 @@ export default function StadiumMap({
     poiLayerRef.current = poiLayer;
     viewRef.current = view;
     mapRef.current = map;
+    setMapView(view, apiKey || null);
 
     view.on("click", async (e) => {
       const r = await view.hitTest(e);
@@ -189,11 +184,10 @@ export default function StadiumMap({
     });
 
     return () => {
+      setMapView(null, null);
       view.destroy();
       viewRef.current = null;
       mapRef.current = null;
-      directionsRef.current = null;
-      routeLayerRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, reloadKey]);
