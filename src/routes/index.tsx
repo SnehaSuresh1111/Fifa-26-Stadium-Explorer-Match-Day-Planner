@@ -180,26 +180,34 @@ function StadiumList({
       <div className="mt-4 space-y-5">
         {order.map((country) => (
           <div key={country}>
-            <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              {country}
+            <div className="sticky top-0 z-[1] -mx-4 mb-2 flex items-center gap-2 bg-white/70 px-4 py-1.5 backdrop-blur">
+              <span className="h-3 w-1 rounded-full bg-gradient-primary" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                {country}
+              </span>
+              <span className="ml-auto text-[10px] text-muted-foreground">
+                {grouped[country]?.length ?? 0}
+              </span>
             </div>
-            <div className="space-y-2">
+            <ul className="space-y-2">
               {grouped[country]?.map((s) => {
                 const active = s.id === selectedId;
                 return (
+                  <li key={s.id}>
                   <button
-                    key={s.id}
                     onClick={() => onPick(s)}
-                    className={`flex w-full items-center gap-3 rounded-2xl p-2 text-left transition ${
+                    aria-pressed={active}
+                    className={`flex w-full items-center gap-3 rounded-2xl p-2 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
                       active
-                        ? "bg-gradient-primary text-white shadow-soft"
-                        : "bg-white/70 hover:bg-white"
+                        ? "bg-gradient-primary text-white shadow-soft ring-2 ring-primary/30"
+                        : "bg-white/70 ring-1 ring-border hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
                     }`}
                   >
                     <img
                       src={s.imageUrl}
                       alt={s.name}
                       className="h-12 w-16 shrink-0 rounded-xl object-cover"
+                      loading="lazy"
                     />
                     <div className="min-w-0 flex-1">
                       <div
@@ -218,9 +226,10 @@ function StadiumList({
                       </div>
                     </div>
                   </button>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
         ))}
       </div>
