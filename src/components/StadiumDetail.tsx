@@ -24,7 +24,7 @@ import DirectionsPanel from "@/components/DirectionsPanel";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants" | "fanzones";
 type EatFilter = "all" | "restaurant" | "sports_bar" | "cafe";
-const RADII = [1000, 1500, 3000] as const;
+const RADII = [1, 1.5, 3] as const;
 type Radius = (typeof RADII)[number];
 
 export default function StadiumDetail({
@@ -39,8 +39,8 @@ export default function StadiumDetail({
   onFanzonesChange?: (zones: FanZone[]) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
-  const [hotelRadius, setHotelRadius] = useState<Radius>(1500);
-  const [eatRadius, setEatRadius] = useState<Radius>(1500);
+  const [hotelRadius, setHotelRadius] = useState<Radius>(1.5);
+  const [eatRadius, setEatRadius] = useState<Radius>(1.5);
   const [hotels, setHotels] = useState<Poi[]>([]);
   const [restaurants, setRestaurants] = useState<Poi[]>([]);
   const [loadingHotels, setLoadingHotels] = useState(false);
@@ -318,7 +318,7 @@ function RadiusToggle({
             value === r ? "bg-gradient-primary text-white shadow-soft" : "text-muted-foreground"
           }`}
         >
-          {r === 1000 ? "1km" : r === 1500 ? "1.5km" : "3km"}
+          {r === 1 ? "1 mi" : r === 1.5 ? "1.5 mi" : "3 mi"}
         </button>
       ))}
     </div>
@@ -509,7 +509,7 @@ function formatDistance(m: number): string {
     const feet = Math.round(m * 3.28084);
     return `${feet} ft`;
   }
-  return `${miles.toFixed(2)} mi`;
+  return miles < 10 ? `${miles.toFixed(1)} mi` : `${Math.round(miles)} mi`;
 }
 
 function formatDateRange(startIso: string, endIso: string): string {
