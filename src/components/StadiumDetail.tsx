@@ -285,6 +285,116 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
+function RadiusToggle({
+  value,
+  onChange,
+}: {
+  value: Radius;
+  onChange: (r: Radius) => void;
+}) {
+  return (
+    <div className="inline-flex rounded-full bg-white/70 p-1 text-[11px] font-semibold ring-1 ring-border">
+      {RADII.map((r) => (
+        <button
+          key={r}
+          onClick={() => onChange(r)}
+          className={`rounded-full px-3 py-1 transition ${
+            value === r ? "bg-gradient-primary text-white shadow-soft" : "text-muted-foreground"
+          }`}
+        >
+          {r === 1000 ? "1km" : r === 1500 ? "1.5km" : "3km"}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function HotelsTab({
+  items,
+  loading,
+  error,
+  radius,
+  setRadius,
+}: {
+  items: Poi[];
+  loading: boolean;
+  error: string | null;
+  radius: Radius;
+  setRadius: (r: Radius) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
+        <RadiusToggle value={radius} onChange={setRadius} />
+      </div>
+      <PoiList
+        kind="hotel"
+        items={items}
+        loading={loading}
+        error={error}
+        emptyMessage="No hotels found nearby. Try a wider radius."
+      />
+    </div>
+  );
+}
+
+function EatTab({
+  items,
+  loading,
+  error,
+  radius,
+  setRadius,
+  filter,
+  setFilter,
+}: {
+  items: Poi[];
+  loading: boolean;
+  error: string | null;
+  radius: Radius;
+  setRadius: (r: Radius) => void;
+  filter: EatFilter;
+  setFilter: (f: EatFilter) => void;
+}) {
+  const filtered = filter === "all" ? items : items.filter((p) => p.subKind === filter);
+  const chips: { id: EatFilter; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
+    { id: "all", label: "All", Icon: Sparkles },
+    { id: "restaurant", label: "Restaurants", Icon: Utensils },
+    { id: "sports_bar", label: "Sports Bars", Icon: Beer },
+    { id: "cafe", label: "Cafés", Icon: Coffee },
+  ];
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
+        <RadiusToggle value={radius} onChange={setRadius} />
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {chips.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            onClick={() => setFilter(id)}
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
+              filter === id
+                ? "bg-gradient-primary text-white shadow-soft"
+                : "bg-white/70 text-muted-foreground hover:bg-white"
+            }`}
+          >
+            <Icon size={11} /> {label}
+          </button>
+        ))}
+      </div>
+      <PoiList
+        kind="restaurant"
+        items={filtered}
+        loading={loading}
+        error={error}
+        emptyMessage="No places match this filter. Try another category or wider radius."
+      />
+    </div>
+  );
+}
+
 function PoiList({
   kind,
   items,
@@ -334,7 +444,7 @@ function PoiList({
 function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
   const href =
     kind === "hotel"
-      ? bookingUrl(poi.name, poi.lat, poi.lon)
+      ? bookingUrl(poi.name)
       : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
   const label = kind === "hotel" ? "Check Prices" : "View on Map";
   // Convert 0-10 rating to 0-5 stars
