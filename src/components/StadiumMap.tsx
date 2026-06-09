@@ -45,6 +45,7 @@ interface Props {
   onSelect: (s: Stadium) => void;
   flyToCity: string | null;
   pois?: Poi[];
+  poiKind?: "hotels" | "eatdrink" | null;
 }
 
 export default function StadiumMap({
@@ -52,11 +53,13 @@ export default function StadiumMap({
   onSelect,
   flyToCity,
   pois = [],
+  poiKind = null,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
-  const poiLayerRef = useRef<GraphicsLayer | null>(null);
+  const hotelsLayerRef = useRef<GraphicsLayer | null>(null);
+  const eatLayerRef = useRef<GraphicsLayer | null>(null);
   const mapRef = useRef<Map | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -78,10 +81,11 @@ export default function StadiumMap({
     if (!containerRef.current || apiKey === null) return;
     if (apiKey) esriConfig.apiKey = apiKey;
     const layer = new GraphicsLayer();
-    const poiLayer = new GraphicsLayer();
+    const hotelsLayer = new GraphicsLayer({ id: "hotels-layer", visible: false });
+    const eatLayer = new GraphicsLayer({ id: "eatdrink-layer", visible: false });
     const map = new Map({
       basemap: "streets-navigation-vector",
-      layers: [poiLayer, layer],
+      layers: [hotelsLayer, eatLayer, layer],
     });
     const view = new MapView({
       container: containerRef.current,
@@ -89,6 +93,7 @@ export default function StadiumMap({
       center: [-95, 40],
       zoom: 3,
       ui: { components: ["zoom"] },
+      popup: { dockEnabled: false, collapseEnabled: false } as any,
     });
     view.ui.add(new Home({ view }), "top-left");
 
@@ -109,7 +114,8 @@ export default function StadiumMap({
     });
 
     layerRef.current = layer;
-    poiLayerRef.current = poiLayer;
+    hotelsLayerRef.current = hotelsLayer;
+    eatLayerRef.current = eatLayer;
     viewRef.current = view;
     mapRef.current = map;
     setMapView(view, apiKey || null);
@@ -160,25 +166,56 @@ export default function StadiumMap({
   }, [flyToCity]);
 
   useEffect(() => {
-    const layer = poiLayerRef.current;
-    if (!layer) return;
-    layer.removeAll();
+    const hotels = hotelsLayerRef.current;
+    const eat = eatLayerRef.current;
+    if (!hotels || !eat) return;
+    hotels.removeAll();
+    eat.removeAll();
     pois.forEach((p) => {
-      const color = p.kind === "hotel" ? HOTEL_COLOR : FOOD_COLOR;
-      const g = new Graphic({
-        geometry: new Point({ longitude: p.lon, latitude: p.lat }),
-        symbol: new PictureMarkerSymbol({ url: dotSvg(color), width: 18, height: 18 }),
-        attributes: {
-          id: p.id,
-          name: p.name,
-          kind: p.kind,
-          cuisine: p.cuisine,
-          address: p.address,
-        },
-      });
-      layer.add(g);
+      if (p.kind === "hotel") {
+        hotels.add(
+          new Graphic({
+            geometry: new Point({ longitude: p.lon, latitude: p.lat }),
+            symbol: new PictureMarkerSymbol({
+              url: dotSvg(HOTEL_COLOR),
+              width: 18,
+              height: 18,
+            }),
+            attributes: { name: p.name, address: p.address ?? "" },
+            popupTemplate: {
+              title: "{name}",
+              content: "{address}",
+            } as any,
+          }),
+        );
+      } else {
+        const isBar = p.subKind === "sports_bar";
+        const size = isBar ? 18 : 13;
+        eat.add(
+          new Graphic({
+            geometry: new Point({ longitude: p.lon, latitude: p.lat }),
+            symbol: new PictureMarkerSymbol({
+              url: dotSvg(FOOD_COLOR),
+              width: size,
+              height: size,
+            }),
+            attributes: { name: p.name, category: p.categoryLabel ?? "" },
+            popupTemplate: {
+              title: "{name}",
+              content: "{category}",
+            } as any,
+          }),
+        );
+      }
     });
   }, [pois]);
+
+  useEffect(() => {
+    const hotels = hotelsLayerRef.current;
+    const eat = eatLayerRef.current;
+    if (hotels) hotels.visible = poiKind === "hotels";
+    if (eat) eat.visible = poiKind === "eatdrink";
+  }, [poiKind]);
 
   if (apiKey === null) {
     return (
