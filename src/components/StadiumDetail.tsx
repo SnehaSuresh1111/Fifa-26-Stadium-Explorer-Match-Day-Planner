@@ -265,7 +265,7 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
       </div>
 
       <p className="pt-1 text-center text-[10px] text-muted-foreground">
-        Transport info curated for FIFA 2026 matchdays. For live navigation tap Get Directions.
+        Transport info curated for FIFA 2026 matchdays.
       </p>
     </div>
   );
