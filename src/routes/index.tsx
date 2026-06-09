@@ -4,7 +4,7 @@ import { stadiums, type Stadium } from "@/data/stadiums";
 import StadiumDetail from "@/components/StadiumDetail";
 import type { Poi } from "@/lib/overpass";
 import type { FanZone } from "@/data/fanzones";
-import { ChevronLeft, ChevronRight, List, MapPin, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Loader2, MapPin, X } from "lucide-react";
 
 const StadiumMap = lazy(() => import("@/components/StadiumMap"));
 
@@ -224,6 +224,15 @@ function StadiumList({
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function MapLoading() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 text-muted-foreground">
+      <Loader2 size={28} className="animate-spin text-primary" />
+      <div className="text-xs uppercase tracking-[0.18em]">Loading map</div>
     </div>
   );
 }
