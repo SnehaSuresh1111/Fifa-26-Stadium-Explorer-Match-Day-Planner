@@ -99,6 +99,40 @@ export default function StadiumMap({
         dockEnabled: false,
       },
     });
+
+    // Inject sleek popup overrides
+    const popupStyle = document.createElement("style");
+    popupStyle.textContent = `
+      .esri-popup__main-container {
+        border-radius: 10px !important;
+        box-shadow: 0 6px 24px -6px rgba(0,0,0,0.18) !important;
+        max-width: 200px !important;
+      }
+      .esri-popup__header {
+        padding: 8px 10px 4px !important;
+      }
+      .esri-popup__header-title {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif !important;
+        letter-spacing: -0.01em !important;
+      }
+      .esri-popup__content {
+        padding: 0 10px 8px !important;
+      }
+      .esri-popup__pointer {
+        display: none !important;
+      }
+      .esri-popup__footer {
+        display: none !important;
+      }
+      .esri-popup__button {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 12px !important;
+      }
+    `;
+    containerRef.current.appendChild(popupStyle);
     view.ui.add(new Home({ view }), "top-left");
 
     const defaultSym = new PictureMarkerSymbol({
@@ -117,13 +151,13 @@ export default function StadiumMap({
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:220px;";
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;";
             const loc = document.createElement("div");
-            loc.style.cssText = "color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;";
+            loc.style.cssText = "color:var(--muted-foreground);font-weight:600;font-size:11px;margin-bottom:2px;";
             loc.textContent = `${s.city}, ${s.country}`;
             const cap = document.createElement("div");
-            cap.style.cssText = "color:#c4b5fd;font-size:13px;";
-            cap.innerHTML = `<span style="margin-right:4px;">&#128100;</span> Capacity: <b>${s.capacity.toLocaleString()}</b>`;
+            cap.style.cssText = "color:var(--foreground);font-size:12px;";
+            cap.innerHTML = `Capacity <b>${s.capacity.toLocaleString()}</b>`;
             wrap.appendChild(loc);
             wrap.appendChild(cap);
             return wrap;
@@ -218,21 +252,20 @@ export default function StadiumMap({
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText =
-              "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
-            const badge = document.createElement("div");
-            badge.style.cssText = `display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:6px;`;
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;font-size:12px;";
+            const badge = document.createElement("span");
+            badge.style.cssText = `display:inline-block;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:4px;`;
             badge.textContent = p.kind;
             wrap.appendChild(badge);
             if (p.cuisine) {
               const c = document.createElement("div");
-              c.style.cssText = "color:#818cf8;font-weight:600;text-transform:capitalize;";
+              c.style.cssText = "color:var(--muted-foreground);font-weight:600;text-transform:capitalize;font-size:11px;";
               c.textContent = p.cuisine;
               wrap.appendChild(c);
             }
             if (p.address) {
               const a = document.createElement("div");
-              a.style.cssText = "color:#6b7280;font-size:12px;margin-top:2px;";
+              a.style.cssText = "color:var(--muted-foreground);font-size:11px;margin-top:2px;";
               a.textContent = p.address;
               wrap.appendChild(a);
             }
