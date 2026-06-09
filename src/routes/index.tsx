@@ -33,7 +33,6 @@ function Index() {
   const [pois, setPois] = useState<Poi[]>([]);
   const [panelOpen, setPanelOpen] = useState(true);
   const [showList, setShowList] = useState(true);
-  const [directionsFor, setDirectionsFor] = useState<Stadium | null>(null);
   useEffect(() => setMounted(true), []);
 
   const handlePoisChange = useCallback((next: Poi[]) => setPois(next), []);
@@ -42,7 +41,6 @@ function Index() {
     setSelected(s);
     setShowList(false);
     setPanelOpen(true);
-    setDirectionsFor(null);
   };
 
   const onPickStadium = (s: Stadium) => {
@@ -50,7 +48,6 @@ function Index() {
     setTimeout(() => setFlyToCity(null), 50);
     setSelected(s);
     setShowList(false);
-    setDirectionsFor(null);
   };
 
   return (
@@ -69,7 +66,6 @@ function Index() {
               onSelect={onSelect}
               flyToCity={flyToCity}
               pois={pois}
-              directionsFor={directionsFor}
             />
           </Suspense>
         ) : (
@@ -144,7 +140,6 @@ function Index() {
               <StadiumDetail
                 stadium={selected}
                 onPoisChange={handlePoisChange}
-                onShowDirections={() => setDirectionsFor(selected)}
               />
             )}
           </div>
