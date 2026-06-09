@@ -151,13 +151,13 @@ export default function StadiumMap({
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:220px;";
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;";
             const loc = document.createElement("div");
-            loc.style.cssText = "color:#818cf8;font-weight:700;font-size:14px;margin-bottom:4px;";
+            loc.style.cssText = "color:var(--muted-foreground);font-weight:600;font-size:11px;margin-bottom:2px;";
             loc.textContent = `${s.city}, ${s.country}`;
             const cap = document.createElement("div");
-            cap.style.cssText = "color:#c4b5fd;font-size:13px;";
-            cap.innerHTML = `<span style="margin-right:4px;">&#128100;</span> Capacity: <b>${s.capacity.toLocaleString()}</b>`;
+            cap.style.cssText = "color:var(--foreground);font-size:12px;";
+            cap.innerHTML = `Capacity <b>${s.capacity.toLocaleString()}</b>`;
             wrap.appendChild(loc);
             wrap.appendChild(cap);
             return wrap;
