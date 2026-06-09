@@ -252,21 +252,20 @@ export default function StadiumMap({
           title: "{name}",
           content: () => {
             const wrap = document.createElement("div");
-            wrap.style.cssText =
-              "font-family:'DM Sans',Arial,sans-serif;max-width:240px;font-size:13px;";
-            const badge = document.createElement("div");
-            badge.style.cssText = `display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:6px;`;
+            wrap.style.cssText = "font-family:'DM Sans',Arial,sans-serif;max-width:180px;font-size:12px;";
+            const badge = document.createElement("span");
+            badge.style.cssText = `display:inline-block;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:white;background:${color};margin-bottom:4px;`;
             badge.textContent = p.kind;
             wrap.appendChild(badge);
             if (p.cuisine) {
               const c = document.createElement("div");
-              c.style.cssText = "color:#818cf8;font-weight:600;text-transform:capitalize;";
+              c.style.cssText = "color:var(--muted-foreground);font-weight:600;text-transform:capitalize;font-size:11px;";
               c.textContent = p.cuisine;
               wrap.appendChild(c);
             }
             if (p.address) {
               const a = document.createElement("div");
-              a.style.cssText = "color:#6b7280;font-size:12px;margin-top:2px;";
+              a.style.cssText = "color:var(--muted-foreground);font-size:11px;margin-top:2px;";
               a.textContent = p.address;
               wrap.appendChild(a);
             }
