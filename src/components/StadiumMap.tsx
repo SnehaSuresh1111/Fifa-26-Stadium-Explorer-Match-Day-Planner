@@ -10,6 +10,7 @@ import esriConfig from "@arcgis/core/config";
 import "@arcgis/core/assets/esri/themes/light/main.css";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import type { Poi } from "@/lib/overpass";
+import type { FanZone } from "@/data/fanzones";
 import { useServerFn } from "@tanstack/react-start";
 import { getArcgisKey } from "@/lib/arcgis.functions";
 import { setMapView } from "@/lib/arcgisMapHolder";
@@ -18,6 +19,7 @@ const ACCENT = "#C0392B";
 const PRIMARY = "#1C4E8A";
 const HOTEL_COLOR = "#f59e0b";
 const FOOD_COLOR = "#10b981";
+const FANZONE_COLOR = "#6C3483";
 
 const pinSvg = (color: string) => {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'>
@@ -45,7 +47,8 @@ interface Props {
   onSelect: (s: Stadium) => void;
   flyToCity: string | null;
   pois?: Poi[];
-  poiKind?: "hotels" | "eatdrink" | null;
+  poiKind?: "hotels" | "eatdrink" | "fanzones" | null;
+  fanzones?: FanZone[];
 }
 
 export default function StadiumMap({
@@ -54,12 +57,14 @@ export default function StadiumMap({
   flyToCity,
   pois = [],
   poiKind = null,
+  fanzones = [],
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<MapView | null>(null);
   const layerRef = useRef<GraphicsLayer | null>(null);
   const hotelsLayerRef = useRef<GraphicsLayer | null>(null);
   const eatLayerRef = useRef<GraphicsLayer | null>(null);
+  const fanzoneLayerRef = useRef<GraphicsLayer | null>(null);
   const mapRef = useRef<Map | null>(null);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -83,9 +88,10 @@ export default function StadiumMap({
     const layer = new GraphicsLayer();
     const hotelsLayer = new GraphicsLayer({ id: "hotels-layer", visible: false });
     const eatLayer = new GraphicsLayer({ id: "eatdrink-layer", visible: false });
+    const fanzoneLayer = new GraphicsLayer({ id: "fanzones-layer", visible: false });
     const map = new Map({
       basemap: "streets-navigation-vector",
-      layers: [hotelsLayer, eatLayer, layer],
+      layers: [hotelsLayer, eatLayer, fanzoneLayer, layer],
     });
     const view = new MapView({
       container: containerRef.current,
@@ -116,6 +122,7 @@ export default function StadiumMap({
     layerRef.current = layer;
     hotelsLayerRef.current = hotelsLayer;
     eatLayerRef.current = eatLayer;
+    fanzoneLayerRef.current = fanzoneLayer;
     viewRef.current = view;
     mapRef.current = map;
     setMapView(view, apiKey || null);
@@ -215,7 +222,37 @@ export default function StadiumMap({
     const eat = eatLayerRef.current;
     if (hotels) hotels.visible = poiKind === "hotels";
     if (eat) eat.visible = poiKind === "eatdrink";
+    const fz = fanzoneLayerRef.current;
+    if (fz) fz.visible = poiKind === "fanzones";
   }, [poiKind]);
+
+  useEffect(() => {
+    const fz = fanzoneLayerRef.current;
+    if (!fz) return;
+    fz.removeAll();
+    fanzones.forEach((z) => {
+      fz.add(
+        new Graphic({
+          geometry: new Point({ longitude: z.lon, latitude: z.lat }),
+          symbol: new PictureMarkerSymbol({
+            url: dotSvg(FANZONE_COLOR),
+            width: 22,
+            height: 22,
+          }),
+          attributes: {
+            name: z.name,
+            venue: z.venue,
+            dates: `${z.startDate} – ${z.endDate}`,
+            free: z.isFreeEntry ? "FREE ENTRY" : "",
+          },
+          popupTemplate: {
+            title: "{name}",
+            content: "<b>{venue}</b><br/>{dates}<br/><span style='color:#059669;font-weight:700'>{free}</span>",
+          } as any,
+        }),
+      );
+    });
+  }, [fanzones]);
 
   if (apiKey === null) {
     return (
