@@ -271,59 +271,6 @@ export default function StadiumMap({
     });
   }, [pois]);
 
-  // Directions widget toggle
-  useEffect(() => {
-    const view = viewRef.current;
-    const map = mapRef.current;
-    if (!view || !map) return;
-    if (!directionsFor) {
-      if (directionsRef.current) {
-        view.ui.remove(directionsRef.current);
-        directionsRef.current.destroy();
-        directionsRef.current = null;
-      }
-      if (routeLayerRef.current) {
-        map.remove(routeLayerRef.current);
-        routeLayerRef.current = null;
-      }
-      return;
-    }
-    if (!routeLayerRef.current) {
-      routeLayerRef.current = new RouteLayer();
-      map.add(routeLayerRef.current);
-    }
-    if (!directionsRef.current) {
-      directionsRef.current = new Directions({
-        view,
-        layer: routeLayerRef.current,
-        apiKey: apiKey || undefined,
-        unit: "metric",
-        visibleElements: {
-          saveAsButton: false,
-          saveButton: false,
-          layerDetails: false,
-          printButton: false,
-        },
-      });
-      view.ui.add(directionsRef.current, "top-left");
-    }
-    const widget = directionsRef.current;
-    const route = routeLayerRef.current;
-    widget.when(() => {
-      route.stops.removeAll();
-      route.stops.add(new Stop({ name: "Origin" }));
-      route.stops.add(
-        new Stop({
-          name: directionsFor.name,
-          geometry: new Point({
-            longitude: directionsFor.longitude,
-            latitude: directionsFor.latitude,
-          }),
-        }),
-      );
-    });
-  }, [directionsFor]);
-
   if (apiKey === null) {
     return (
       <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
