@@ -97,8 +97,44 @@ export default function StadiumMap({
       ui: { components: ["zoom"] },
       popup: {
         dockEnabled: false,
+        collapseEnabled: false,
+        maxInlineWidth: 200,
       },
     });
+
+    // Inject sleek popup overrides
+    const popupStyle = document.createElement("style");
+    popupStyle.textContent = `
+      .esri-popup__main-container {
+        border-radius: 10px !important;
+        box-shadow: 0 6px 24px -6px rgba(0,0,0,0.18) !important;
+        max-width: 200px !important;
+      }
+      .esri-popup__header {
+        padding: 8px 10px 4px !important;
+      }
+      .esri-popup__header-title {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+        font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif !important;
+        letter-spacing: -0.01em !important;
+      }
+      .esri-popup__content {
+        padding: 0 10px 8px !important;
+      }
+      .esri-popup__pointer {
+        display: none !important;
+      }
+      .esri-popup__footer {
+        display: none !important;
+      }
+      .esri-popup__button {
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 12px !important;
+      }
+    `;
+    containerRef.current.appendChild(popupStyle);
     view.ui.add(new Home({ view }), "top-left");
 
     const defaultSym = new PictureMarkerSymbol({
