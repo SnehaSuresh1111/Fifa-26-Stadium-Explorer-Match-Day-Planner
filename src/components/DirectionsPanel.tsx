@@ -229,8 +229,9 @@ export default function DirectionsPanel({ stadium }: Props) {
       const attrs: any = r.route.attributes ?? {};
       const miles =
         attrs.Total_Miles ??
-        (typeof attrs.Total_Kilometers === "number" ? attrs.Total_Kilometers * 0.621371 : 0) ??
-        (r as any).directions?.totalLength ??
+        (typeof attrs.Total_Kilometers === "number"
+          ? attrs.Total_Kilometers * 0.621371
+          : (r as any).directions?.totalLength) ??
         0;
       const minutes =
         attrs.Total_TravelTime ??
