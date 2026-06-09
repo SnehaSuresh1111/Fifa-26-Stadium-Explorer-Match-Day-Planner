@@ -511,3 +511,63 @@ function formatDistance(m: number): string {
   }
   return `${miles.toFixed(2)} mi`;
 }
+
+function formatDateRange(startIso: string, endIso: string): string {
+  const start = new Date(startIso + "T00:00:00");
+  const end = new Date(endIso + "T00:00:00");
+  const sameYear = start.getFullYear() === end.getFullYear();
+  const sMonth = start.toLocaleString("en-US", { month: "short" });
+  const eMonth = end.toLocaleString("en-US", { month: "short" });
+  const s = `${sMonth} ${start.getDate()}`;
+  const e = `${eMonth} ${end.getDate()} ${end.getFullYear()}`;
+  return sameYear ? `${s} – ${e}` : `${s} ${start.getFullYear()} – ${e}`;
+}
+
+function FanZonesTab({ zones }: { zones: FanZone[] }) {
+  if (zones.length === 0) {
+    return (
+      <div className="space-y-3">
+        <div className="rounded-2xl bg-white/85 p-4 text-xs text-muted-foreground ring-1 ring-border">
+          No confirmed fan zones for this city yet. Check FIFA.com
+        </div>
+        <FanzoneFooter />
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-2.5">
+      {zones.map((z) => (
+        <div key={z.id} className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-bold text-foreground">{z.name}</div>
+              <div className="mt-0.5 text-[12px] font-semibold text-primary">{z.venue}</div>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">{z.address}</div>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-foreground">
+                <span className="font-semibold">{formatDateRange(z.startDate, z.endDate)}</span>
+                <span className="text-muted-foreground">· {z.hours}</span>
+              </div>
+              <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">
+                {z.description}
+              </p>
+              {z.isFreeEntry && (
+                <span className="mt-2 inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                  Free Entry
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+      <FanzoneFooter />
+    </div>
+  );
+}
+
+function FanzoneFooter() {
+  return (
+    <p className="pt-1 text-[10px] italic text-muted-foreground">
+      Fan zone info correct as of June 2026. Verify at FIFA.com before travel.
+    </p>
+  );
+}
