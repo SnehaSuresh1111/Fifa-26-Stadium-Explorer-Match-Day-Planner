@@ -117,6 +117,10 @@ export default function DirectionsPanel({ stadium }: Props) {
         return;
       }
       const c = candidates[0];
+      if (!c.location) {
+        setError("Address not found. Try another query.");
+        return;
+      }
       setOrigin(c.location);
       setOriginLabel(c.address || text);
     } catch (e: any) {
@@ -198,7 +202,7 @@ export default function DirectionsPanel({ stadium }: Props) {
           }),
         });
         layer.addMany([line, start, end]);
-        if (view) {
+        if (view && line.geometry) {
           view.goTo(line.geometry, { duration: 600 }).catch(() => {});
         }
       }
