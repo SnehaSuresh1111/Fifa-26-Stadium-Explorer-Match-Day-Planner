@@ -233,7 +233,7 @@ export default function StadiumMap({
     fanzones.forEach((z) => {
       fz.add(
         new Graphic({
-          geometry: new Point({ longitude: z.lon, latitude: z.latitude ?? z.lat }),
+          geometry: new Point({ longitude: z.lon, latitude: z.lat }),
           symbol: new PictureMarkerSymbol({
             url: dotSvg(FANZONE_COLOR),
             width: 22,
