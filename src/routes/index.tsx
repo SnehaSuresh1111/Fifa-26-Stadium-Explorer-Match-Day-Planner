@@ -59,14 +59,12 @@ function Index() {
   };
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden">
-      <main className="relative flex-1">
+    <div className="relative flex h-dvh w-screen overflow-hidden">
+      <main className="relative flex-1 min-w-0">
         {mounted ? (
           <Suspense
             fallback={
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Loading map…
-              </div>
+              <MapLoading />
             }
           >
             <StadiumMap
@@ -79,15 +77,13 @@ function Index() {
             />
           </Suspense>
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            Loading map…
-          </div>
+          <MapLoading />
         )}
 
         {!panelOpen && (
           <button
             onClick={() => setPanelOpen(true)}
-            className="absolute right-3 top-3 z-20 flex items-center gap-2 rounded-2xl bg-gradient-primary px-3 py-2 text-sm font-semibold text-white shadow-glow"
+            className="absolute right-3 top-3 z-20 flex items-center gap-2 rounded-2xl bg-gradient-primary px-3 py-2 text-sm font-semibold text-white shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2"
             aria-label="Open panel"
           >
             <ChevronLeft size={16} /> Stadiums
@@ -98,8 +94,8 @@ function Index() {
       {/* Unified side panel: header + stadium list + tabs */}
       <aside
         className={`${
-          panelOpen ? "translate-x-0" : "translate-x-full"
-        } absolute right-0 top-0 z-30 h-full w-full max-w-[400px] p-3 transition-transform duration-300 sm:w-[380px]`}
+          panelOpen ? "translate-x-0" : "translate-x-full sm:translate-x-0 sm:w-0 sm:p-0"
+        } absolute right-0 top-0 z-30 h-full w-full max-w-[400px] p-3 transition-all duration-300 sm:static sm:h-auto sm:shrink-0 sm:self-stretch sm:w-[380px]`}
       >
         <div className="flex h-full flex-col overflow-hidden rounded-3xl glass shadow-glow">
           {/* Brand header */}
@@ -119,7 +115,7 @@ function Index() {
             </div>
             <button
               onClick={() => setPanelOpen(false)}
-              className="rounded-full p-1.5 text-muted-foreground hover:bg-white/60"
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
               aria-label="Close panel"
             >
               <ChevronRight size={18} />
