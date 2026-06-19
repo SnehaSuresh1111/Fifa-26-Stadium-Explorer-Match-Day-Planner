@@ -493,8 +493,7 @@ function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
       </div>
       <a
         href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        target="_top"
         className="mt-2 inline-flex items-center gap-1 rounded-full bg-gradient-soft px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:opacity-80"
       >
         {label} <ExternalLink size={11} />
