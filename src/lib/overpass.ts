@@ -1,8 +1,7 @@
-import { queryPlacesNearPoint, fetchPlace } from "@arcgis/core/rest/places";
-import PlacesQueryParameters from "@arcgis/core/rest/support/PlacesQueryParameters";
-import FetchPlaceParameters from "@arcgis/core/rest/support/FetchPlaceParameters";
-import Point from "@arcgis/core/geometry/Point";
-import esriConfig from "@arcgis/core/config";
+import { getApiKey } from "@/lib/arcgisMapHolder";
+
+const PLACES_BASE =
+  "https://places-api.arcgis.com/arcgis/rest/services/places-service/v1/places";
 
 export interface Poi {
   id: string;
@@ -52,30 +51,32 @@ async function runPlaces(
   kind: "hotel" | "restaurant",
   pageSize: number,
 ): Promise<Poi[]> {
-  const params = new PlacesQueryParameters({
-    apiKey: esriConfig.apiKey || undefined,
-    point: new Point({ longitude: lon, latitude: lat }),
-    radius,
-    categoryIds,
-    icon: null,
-    pageSize,
-  });
+  const token = getApiKey() || "";
+  const url = new URL(`${PLACES_BASE}/near-point`);
+  url.searchParams.set("f", "json");
+  url.searchParams.set("x", String(lon));
+  url.searchParams.set("y", String(lat));
+  url.searchParams.set("radius", String(radius));
+  url.searchParams.set("categoryIds", categoryIds.join(","));
+  url.searchParams.set("pageSize", String(pageSize));
+  if (token) url.searchParams.set("token", token);
 
-  let result;
+  let items: any[] = [];
   try {
-    result = await queryPlacesNearPoint(params);
+    const res = await fetch(url.toString());
+    const data = await res.json();
+    items = data?.results ?? [];
   } catch (err) {
-    console.error("[Places] queryPlacesNearPoint failed", { categoryIds, err });
+    console.error("[Places] near-point failed", { categoryIds, err });
     throw err;
   }
-  const items = result.results ?? [];
   const base = items
     .map((p): Poi | null => {
       const loc = p.location;
       if (!loc) return null;
       const cat = p.categories?.[0];
       const catLabel = cat?.label;
-      const catId = (cat as any)?.categoryId as string | undefined;
+      const catId = cat?.categoryId as string | undefined;
       let subKind: Poi["subKind"];
       if (kind === "restaurant") {
         const l = (catLabel || "").toLowerCase();
@@ -101,16 +102,16 @@ async function runPlaces(
     .filter((x): x is Poi => x !== null)
     .sort((a, b) => a.distance - b.distance);
 
-  // Enrich with rating / price / address via fetchPlace (one call per item, cached upstream)
+  // Enrich with rating / price / address via place details (one call per item, cached upstream)
   const enriched = await Promise.all(
     base.map(async (poi) => {
       try {
-        const params2 = new FetchPlaceParameters({
-          apiKey: esriConfig.apiKey || undefined,
-          placeId: poi.id,
-          requestedFields: ["address", "rating", "rating:price"],
-        });
-        const detail: any = await fetchPlace(params2);
+        const detailUrl = new URL(`${PLACES_BASE}/${encodeURIComponent(poi.id)}`);
+        detailUrl.searchParams.set("f", "json");
+        detailUrl.searchParams.set("requestedFields", "address,rating,rating:price");
+        if (token) detailUrl.searchParams.set("token", token);
+        const detailRes = await fetch(detailUrl.toString());
+        const detail: any = await detailRes.json();
         const place = detail?.placeDetails ?? detail;
         const address = place?.address?.streetAddress ?? place?.address?.designatedMarketArea;
         const rating = typeof place?.rating?.user === "number" ? place.rating.user : undefined;
@@ -122,7 +123,7 @@ async function runPlaces(
               : undefined;
         return { ...poi, address, rating, price };
       } catch (err) {
-        console.warn("[Places] fetchPlace enrichment failed", poi.id, err);
+        console.warn("[Places] place detail enrichment failed", poi.id, err);
         return poi;
       }
     }),
