@@ -169,6 +169,7 @@ export function bookingUrl(
   return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 }
 
-export function gmapsPlaceUrl(_name: string, lat: number, lon: number): string {
-  return `https://maps.google.com/?q=${lat},${lon}`;
+export function gmapsPlaceUrl(name: string, lat: number, lon: number): string {
+  const query = `${name} ${lat},${lon}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
