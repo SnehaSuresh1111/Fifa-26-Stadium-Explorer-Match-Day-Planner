@@ -157,7 +157,9 @@ export async function fetchRestaurants(
 }
 
 export function bookingUrl(hotelName: string): string {
-  return `https://www.booking.com/search.html?ss=${encodeURIComponent(hotelName)}`;
+  // Use Google Hotels search — booking.com sets X-Frame-Options DENY and
+  // refuses to load inside the preview iframe (ERR_BLOCKED_BY_RESPONSE).
+  return `https://www.google.com/travel/hotels?q=${encodeURIComponent(hotelName)}`;
 }
 
 export function gmapsPlaceUrl(_name: string, lat: number, lon: number): string {
