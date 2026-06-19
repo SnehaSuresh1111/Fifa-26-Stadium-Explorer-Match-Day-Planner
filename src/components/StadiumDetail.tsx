@@ -460,7 +460,7 @@ function PoiList({
 function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
   const href =
     kind === "hotel"
-      ? bookingUrl(poi.name)
+      ? bookingUrl(poi.name, poi.address, poi.lat, poi.lon)
       : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
   const label = kind === "hotel" ? "Check Prices" : "View on Map";
   // Convert 0-10 rating to 0-5 stars
