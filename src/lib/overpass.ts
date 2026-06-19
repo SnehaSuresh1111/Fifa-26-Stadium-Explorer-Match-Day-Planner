@@ -156,12 +156,20 @@ export async function fetchRestaurants(
   );
 }
 
-export function bookingUrl(hotelName: string): string {
-  // Use Google Hotels search — booking.com sets X-Frame-Options DENY and
-  // refuses to load inside the preview iframe (ERR_BLOCKED_BY_RESPONSE).
-  return `https://www.google.com/travel/hotels?q=${encodeURIComponent(hotelName)}`;
+export function bookingUrl(
+  hotelName: string,
+  address?: string,
+  lat?: number,
+  lon?: number,
+): string {
+  // Use a normal Google search result for the hotel, not the Google Travel app,
+  // because Travel can show an error when launched from embedded previews.
+  const location = lat !== undefined && lon !== undefined ? `${lat},${lon}` : "";
+  const query = [hotelName, address, location, "hotel prices"].filter(Boolean).join(" ");
+  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
 }
 
-export function gmapsPlaceUrl(_name: string, lat: number, lon: number): string {
-  return `https://maps.google.com/?q=${lat},${lon}`;
+export function gmapsPlaceUrl(name: string, lat: number, lon: number): string {
+  const query = `${name} ${lat},${lon}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
