@@ -495,12 +495,6 @@ function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={(e) => {
-          // Sandboxed preview iframes can swallow target="_blank"; force a
-          // top-level new tab via window.open as a fallback.
-          e.preventDefault();
-          window.open(href, "_blank", "noopener,noreferrer");
-        }}
         className="mt-2 inline-flex items-center gap-1 rounded-full bg-gradient-soft px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:opacity-80"
       >
         {label} <ExternalLink size={11} />
