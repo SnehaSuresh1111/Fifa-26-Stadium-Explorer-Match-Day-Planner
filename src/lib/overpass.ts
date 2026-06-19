@@ -163,11 +163,9 @@ export function bookingUrl(
   lat?: number,
   lon?: number,
 ): string {
-  // Use a normal Google search result for the hotel, not the Google Travel app,
-  // because Travel can show an error when launched from embedded previews.
   const location = lat !== undefined && lon !== undefined ? `${lat},${lon}` : "";
-  const query = [hotelName, address, location, "hotel prices"].filter(Boolean).join(" ");
-  return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+  const query = [hotelName, address, location].filter(Boolean).join(" ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
 export function gmapsPlaceUrl(name: string, lat: number, lon: number): string {
