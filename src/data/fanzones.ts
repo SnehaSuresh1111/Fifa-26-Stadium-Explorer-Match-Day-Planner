@@ -15,20 +15,6 @@ export interface FanZone {
 
 export const fanzones: FanZone[] = [
   {
-    id: "la-expo",
-    cityId: "Los Angeles",
-    name: "FIFA Fan Festival Los Angeles",
-    venue: "Exposition Park",
-    address: "700 Exposition Park Dr, Los Angeles, CA",
-    lat: 34.0166,
-    lon: -118.2876,
-    startDate: "2026-06-11",
-    endDate: "2026-07-19",
-    hours: "11:00 – 23:00 daily",
-    description: "Giant screens, live music, food trucks and family activities next to the LA Coliseum.",
-    isFreeEntry: true,
-  },
-  {
     id: "nyc-liberty",
     cityId: "New York / New Jersey",
     name: "FIFA Fan Festival NY/NJ",
