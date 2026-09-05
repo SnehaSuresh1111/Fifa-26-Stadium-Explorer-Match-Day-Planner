@@ -19,14 +19,23 @@ const arcgisServerStubPrefix = "\0arcgis-server-stub:";
 const excludeArcgisFromServerBuild = {
   name: "exclude-arcgis-from-server-build",
   enforce: "pre" as const,
-  resolveId(source: string, _importer: string | undefined, options: { ssr?: boolean }) {
-    if (options.ssr && source.startsWith("@arcgis/core/")) {
+  resolveId(
+    this: { environment?: { name?: string } },
+    source: string,
+    _importer: string | undefined,
+    options: { ssr?: boolean },
+  ) {
+    const environmentName = this.environment?.name;
+    const isServerBuild = options.ssr || (environmentName !== undefined && environmentName !== "client");
+
+    if (isServerBuild && source.startsWith("@arcgis/core/")) {
       return `${arcgisServerStubPrefix}${source}`;
     }
     return null;
   },
   load(id: string) {
     if (!id.startsWith(arcgisServerStubPrefix)) return null;
+    if (id.endsWith(".css")) return "";
     return `
       export default class ArcgisServerStub {}
       export const solve = () => { throw new Error("ArcGIS is only available in the browser") }
