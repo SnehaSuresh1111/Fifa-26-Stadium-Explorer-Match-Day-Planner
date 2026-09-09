@@ -19,16 +19,15 @@ const arcgisServerStubPrefix = "\0arcgis-server-stub:";
 const excludeArcgisFromServerBuild = {
   name: "exclude-arcgis-from-server-build",
   enforce: "pre" as const,
-  resolveId(
-    this: { environment?: { name?: string } },
-    source: string,
-    _importer: string | undefined,
-    options: { ssr?: boolean },
-  ) {
-    const environmentName = this.environment?.name;
-    const isServerBuild = options.ssr || (environmentName !== undefined && environmentName !== "client");
-
-    if (isServerBuild && source.startsWith("@arcgis/core/")) {
+  // Vite 7 creates separate client and Nitro environments. Installing this
+  // plugin only in non-client environments is more reliable than inferring
+  // the environment from resolveId's optional `ssr` flag (build:dev does not
+  // consistently set that flag for Nitro's module graph).
+  applyToEnvironment(environment: { name: string }) {
+    return environment.name !== "client";
+  },
+  resolveId(source: string) {
+    if (source.startsWith("@arcgis/core/")) {
       return `${arcgisServerStubPrefix}${source}`;
     }
     return null;
