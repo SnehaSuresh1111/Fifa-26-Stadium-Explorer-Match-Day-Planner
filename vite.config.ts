@@ -27,14 +27,14 @@ const excludeArcgisFromServerBuild = {
     return environment.name !== "client";
   },
   resolveId(source: string) {
-    if (source.startsWith("@arcgis/core/")) {
+    if (source === "@arcgis/core" || source.startsWith("@arcgis/core/")) {
       return `${arcgisServerStubPrefix}${source}`;
     }
     return null;
   },
   load(id: string) {
     if (!id.startsWith(arcgisServerStubPrefix)) return null;
-    if (id.endsWith(".css")) return "";
+    if (id.split("?", 1)[0]?.endsWith(".css")) return "";
     return `
       export default class ArcgisServerStub {}
       export const solve = () => { throw new Error("ArcGIS is only available in the browser") }
