@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   User,
   MapPin,
@@ -12,6 +12,8 @@ import { stadiums, type Stadium } from "@/data/stadiums";
 import type { Poi } from "@/lib/overpass";
 import { fanzones, type FanZone } from "@/data/fanzones";
 import DirectionsPanel from "@/components/DirectionsPanel";
+import SavedPlacesTab from "@/components/SavedPlacesTab";
+import { listedPlaces, type PlaceCategory } from "@/lib/saved-places";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants" | "fanzones";
 
@@ -27,19 +29,26 @@ export default function StadiumDetail({
   onFanzonesChange?: (zones: FanZone[]) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
+  const [radius, setRadius] = useState(1.5);
+  const [category, setCategory] = useState<PlaceCategory>("all");
+  const places = useMemo(() => stadium && (tab === "hotels" || tab === "restaurants")
+    ? listedPlaces(stadium, tab === "hotels" ? "hotels" : "eatdrink", radius, category)
+    : [], [stadium, tab, radius, category]);
   // Reset to overview when stadium changes
   useEffect(() => {
     setTab("overview");
+    setRadius(1.5);
+    setCategory("all");
     onPoisChange?.([]);
     onPoiKindChange?.(null);
     onFanzonesChange?.([]);
   }, [stadium?.id, onPoisChange, onPoiKindChange, onFanzonesChange]);
 
-  // No saved establishments exist: clear place markers on every tab change.
+  // Map markers always reflect the same locally filtered records as the cards.
   useEffect(() => {
-    onPoisChange?.([]);
-    onPoiKindChange?.(tab === "fanzones" ? "fanzones" : null);
-  }, [tab, onPoisChange, onPoiKindChange]);
+    onPoisChange?.(places);
+    onPoiKindChange?.(tab === "fanzones" ? "fanzones" : tab === "hotels" ? "hotels" : tab === "restaurants" ? "eatdrink" : null);
+  }, [tab, places, onPoisChange, onPoiKindChange]);
 
   // Push fanzones for this city to parent when tab is active
   const cityFanzones = stadium ? fanzones.filter((z) => z.cityId === stadium.city) : [];
@@ -105,7 +114,7 @@ export default function StadiumDetail({
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
         {tab === "transport" && <DirectionsPanel stadium={stadium} />}
-        {(tab === "hotels" || tab === "restaurants") && <PlacesComingSoon />}
+        {(tab === "hotels" || tab === "restaurants") && <SavedPlacesTab stadiumId={stadium.id} kind={tab === "hotels" ? "hotels" : "eatdrink"} places={places} radius={radius} onRadiusChange={setRadius} category={category} onCategoryChange={setCategory} />}
         {tab === "fanzones" && <FanZonesTab zones={cityFanzones} />}
       </div>
     </div>
@@ -163,14 +172,6 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
           <span>{stadium.city}</span>
         </div>
       </div>
-    </div>
-  );
-}
-
-function PlacesComingSoon() {
-  return (
-    <div role="status" className="rounded-2xl bg-card p-4 text-xs text-muted-foreground ring-1 ring-border">
-      Place listings coming soon
     </div>
   );
 }

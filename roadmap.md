@@ -9,3 +9,11 @@
 - [x] Audit bundled establishment data, verified stadium addresses and official transport links (none available).
 - [x] Replace broken Transport, Hotels and Eat content without external services or invented facts.
 - [x] Verify the tabs, map layers, mobile layout, existing tests and automated build.
+
+# Bundled content repair
+- [x] Audit existing data; retrieve 159 named AT&T OSM records once.
+- [x] Bundle genuine places and 15 verified official stadium address/travel records by stadium ID.
+- [x] Restore local category/radius filters, sorted distances, cards and matching markers.
+- [x] Verify AT&T and all stadium tabs, desktop/mobile layout, seven tests and automated build.
+- [ ] Remaining 15 stadium place snapshots: blocked by Overpass HTTP 502 capacity, HTTP 429 and mirror timeouts.
+- [ ] BBVA address/travel: blocked by unverified alternative-domain provenance and original-domain fetch failure.
