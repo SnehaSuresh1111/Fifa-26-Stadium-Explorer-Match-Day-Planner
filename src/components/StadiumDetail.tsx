@@ -1,31 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   User,
   MapPin,
   Sparkles,
   Train,
-  Navigation,
   Hotel,
   UtensilsCrossed,
-  Loader2,
-  ExternalLink,
-  Info,
-  Star,
-  Beer,
-  Coffee,
-  Utensils,
   PartyPopper,
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
-import { transportData } from "@/data/transport";
-import { PLACES_UNAVAILABLE, fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
+import type { Poi } from "@/lib/overpass";
 import { fanzones, type FanZone } from "@/data/fanzones";
 import DirectionsPanel from "@/components/DirectionsPanel";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants" | "fanzones";
-type EatFilter = "all" | "restaurant" | "sports_bar" | "cafe";
-const RADII = [1, 1.5, 3] as const;
-type Radius = (typeof RADII)[number];
 
 export default function StadiumDetail({
   stadium,
@@ -39,90 +27,19 @@ export default function StadiumDetail({
   onFanzonesChange?: (zones: FanZone[]) => void;
 }) {
   const [tab, setTab] = useState<Tab>("overview");
-  const [hotelRadius, setHotelRadius] = useState<Radius>(1.5);
-  const [eatRadius, setEatRadius] = useState<Radius>(1.5);
-  const [hotels, setHotels] = useState<Poi[]>([]);
-  const [restaurants, setRestaurants] = useState<Poi[]>([]);
-  const [loadingHotels, setLoadingHotels] = useState(false);
-  const [loadingEat, setLoadingEat] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [eatFilter, setEatFilter] = useState<EatFilter>("all");
-  const hotelsCache = useRef(new Map<string, Poi[]>());
-  const eatCache = useRef(new Map<string, Poi[]>());
-
   // Reset to overview when stadium changes
   useEffect(() => {
     setTab("overview");
-    setHotels([]);
-    setRestaurants([]);
-    setError(null);
     onPoisChange?.([]);
     onPoiKindChange?.(null);
     onFanzonesChange?.([]);
   }, [stadium?.id, onPoisChange, onPoiKindChange, onFanzonesChange]);
 
-  // Fetch hotels when tab/radius changes
+  // No saved establishments exist: clear place markers on every tab change.
   useEffect(() => {
-    if (!stadium || tab !== "hotels") return;
-    const key = `${stadium.id}-hotels-${hotelRadius}`;
-    const cached = hotelsCache.current.get(key);
-    if (cached) {
-      setHotels(cached);
-      onPoisChange?.(cached);
-      return;
-    }
-    setLoadingHotels(true);
-    setError(null);
-    fetchHotels(stadium.id, stadium.latitude, stadium.longitude, hotelRadius)
-      .then((list) => {
-        hotelsCache.current.set(key, list);
-        setHotels(list);
-        onPoisChange?.(list);
-      })
-      .catch((e) => setError(String(e)))
-      .finally(() => setLoadingHotels(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, stadium?.id, hotelRadius]);
-
-  // Fetch eat & drink when tab/radius changes
-  useEffect(() => {
-    if (!stadium || tab !== "restaurants") return;
-    const key = `${stadium.id}-eatdrink-${eatRadius}`;
-    const cached = eatCache.current.get(key);
-    if (cached) {
-      setRestaurants(cached);
-      onPoisChange?.(cached);
-      return;
-    }
-    setLoadingEat(true);
-    setError(null);
-    fetchRestaurants(stadium.id, stadium.latitude, stadium.longitude, eatRadius)
-      .then((list) => {
-        const sorted = [...list].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-        eatCache.current.set(key, sorted);
-        setRestaurants(sorted);
-        onPoisChange?.(sorted);
-      })
-      .catch((e) => setError(String(e)))
-      .finally(() => setLoadingEat(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, stadium?.id, eatRadius]);
-
-  // Tell parent which POI layer should be visible
-  useEffect(() => {
-    if (tab === "hotels") onPoiKindChange?.("hotels");
-    else if (tab === "restaurants") onPoiKindChange?.("eatdrink");
-    else if (tab === "fanzones") onPoiKindChange?.("fanzones");
-    else onPoiKindChange?.(null);
-  }, [tab, onPoiKindChange]);
-
-  // Push current filtered list to map when filter changes on eat tab
-  useEffect(() => {
-    if (tab !== "restaurants") return;
-    const filtered =
-      eatFilter === "all" ? restaurants : restaurants.filter((p) => p.subKind === eatFilter);
-    onPoisChange?.(filtered);
-  }, [eatFilter, restaurants, tab, onPoisChange]);
+    onPoisChange?.([]);
+    onPoiKindChange?.(tab === "fanzones" ? "fanzones" : null);
+  }, [tab, onPoisChange, onPoiKindChange]);
 
   // Push fanzones for this city to parent when tab is active
   const cityFanzones = stadium ? fanzones.filter((z) => z.cityId === stadium.city) : [];
@@ -187,35 +104,8 @@ export default function StadiumDetail({
 
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
-        {tab === "transport" && (
-          <TransportTab stadium={stadium} />
-        )}
-        {tab === "hotels" && (
-          <HotelsTab
-            items={hotels}
-            loading={loadingHotels}
-            error={error}
-            radius={hotelRadius}
-            setRadius={(r) => {
-              setHotels([]);
-              setHotelRadius(r);
-            }}
-          />
-        )}
-        {tab === "restaurants" && (
-          <EatTab
-            items={restaurants}
-            loading={loadingEat}
-            error={error}
-            radius={eatRadius}
-            setRadius={(r) => {
-              setRestaurants([]);
-              setEatRadius(r);
-            }}
-            filter={eatFilter}
-            setFilter={setEatFilter}
-          />
-        )}
+        {tab === "transport" && <DirectionsPanel stadium={stadium} />}
+        {(tab === "hotels" || tab === "restaurants") && <PlacesComingSoon />}
         {tab === "fanzones" && <FanZonesTab zones={cityFanzones} />}
       </div>
     </div>
@@ -277,238 +167,12 @@ function OverviewTab({ stadium }: { stadium: Stadium }) {
   );
 }
 
-function TransportTab({ stadium }: { stadium: Stadium }) {
-  const data = transportData[stadium.id];
+function PlacesComingSoon() {
   return (
-    <div className="space-y-3">
-      <div>
-        <div className="mb-2 flex items-center gap-2 px-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-          <Navigation size={12} /> Directions
-        </div>
-        <DirectionsPanel stadium={stadium} />
-      </div>
-
-      <div className="flex gap-2 rounded-2xl bg-gradient-soft/40 p-3 ring-1 ring-primary/20">
-        <Info size={16} className="mt-0.5 shrink-0 text-primary" />
-        <div className="text-xs text-foreground">
-          <div className="font-bold uppercase tracking-wider text-[10px] text-primary">
-            Matchday Note
-          </div>
-          <div className="mt-1">{data.matchdayNote}</div>
-        </div>
-      </div>
+    <div role="status" className="rounded-2xl bg-card p-4 text-xs text-muted-foreground ring-1 ring-border">
+      Place listings coming soon
     </div>
   );
-}
-
-function RadiusToggle({
-  value,
-  onChange,
-}: {
-  value: Radius;
-  onChange: (r: Radius) => void;
-}) {
-  return (
-    <div className="inline-flex rounded-full bg-white/70 p-1 text-[11px] font-semibold ring-1 ring-border">
-      {RADII.map((r) => (
-        <button
-          key={r}
-          onClick={() => onChange(r)}
-          className={`rounded-full px-3 py-1 transition ${
-            value === r ? "bg-gradient-primary text-white shadow-soft" : "text-muted-foreground"
-          }`}
-        >
-          {r === 1 ? "1 mi" : r === 1.5 ? "1.5 mi" : "3 mi"}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function HotelsTab({
-  items,
-  loading,
-  error,
-  radius,
-  setRadius,
-}: {
-  items: Poi[];
-  loading: boolean;
-  error: string | null;
-  radius: Radius;
-  setRadius: (r: Radius) => void;
-}) {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
-        <RadiusToggle value={radius} onChange={setRadius} />
-      </div>
-      <PoiList
-        kind="hotel"
-        items={items}
-        loading={loading}
-        error={error}
-        emptyMessage="No hotels found nearby. Try a wider radius."
-      />
-    </div>
-  );
-}
-
-function EatTab({
-  items,
-  loading,
-  error,
-  radius,
-  setRadius,
-  filter,
-  setFilter,
-}: {
-  items: Poi[];
-  loading: boolean;
-  error: string | null;
-  radius: Radius;
-  setRadius: (r: Radius) => void;
-  filter: EatFilter;
-  setFilter: (f: EatFilter) => void;
-}) {
-  const filtered = filter === "all" ? items : items.filter((p) => p.subKind === filter);
-  const chips: { id: EatFilter; label: string; Icon: React.ComponentType<{ size?: number }> }[] = [
-    { id: "all", label: "All", Icon: Sparkles },
-    { id: "restaurant", label: "Restaurants", Icon: Utensils },
-    { id: "sports_bar", label: "Sports Bars", Icon: Beer },
-    { id: "cafe", label: "Cafés", Icon: Coffee },
-  ];
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Radius</span>
-        <RadiusToggle value={radius} onChange={setRadius} />
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {chips.map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            onClick={() => setFilter(id)}
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition ${
-              filter === id
-                ? "bg-gradient-primary text-white shadow-soft"
-                : "bg-white/70 text-muted-foreground hover:bg-white"
-            }`}
-          >
-            <Icon size={11} /> {label}
-          </button>
-        ))}
-      </div>
-      <PoiList
-        kind="restaurant"
-        items={filtered}
-        loading={loading}
-        error={error}
-        emptyMessage="No places match this filter. Try another category or wider radius."
-      />
-    </div>
-  );
-}
-
-function PoiList({
-  kind,
-  items,
-  loading,
-  error,
-  emptyMessage,
-}: {
-  kind: "hotel" | "restaurant";
-  items: Poi[];
-  loading: boolean;
-  error: string | null;
-  emptyMessage: string;
-}) {
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-        <Loader2 className="animate-spin text-primary" size={28} />
-        <div className="mt-3 text-xs">
-          Loading nearby {kind === "hotel" ? "hotels" : "places to eat"}…
-        </div>
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="rounded-2xl bg-destructive/10 p-4 text-xs text-destructive">
-        {PLACES_UNAVAILABLE}
-      </div>
-    );
-  }
-  if (items.length === 0) {
-    return (
-      <div className="rounded-2xl bg-white/85 p-4 text-xs text-muted-foreground ring-1 ring-border">
-        {emptyMessage}
-      </div>
-    );
-  }
-  return (
-    <div className="space-y-2.5">
-      {items.map((p) => (
-        <PoiCard key={p.id} poi={p} kind={kind} />
-      ))}
-    </div>
-  );
-}
-
-function PoiCard({ poi, kind }: { poi: Poi; kind: "hotel" | "restaurant" }) {
-  const href =
-    kind === "hotel"
-      ? bookingUrl(poi.name, poi.address, poi.lat, poi.lon)
-      : gmapsPlaceUrl(poi.name, poi.lat, poi.lon);
-  const label = kind === "hotel" ? "Check Prices" : "View on Map";
-  // Convert 0-10 rating to 0-5 stars
-  const stars =
-    typeof poi.rating === "number" ? Math.round((poi.rating / 2) * 10) / 10 : undefined;
-  const priceStr =
-    typeof poi.price === "number" ? "$".repeat(Math.max(1, Math.min(4, poi.price))) : undefined;
-  return (
-    <div className="rounded-2xl bg-white/85 p-3 shadow-soft ring-1 ring-border">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-bold text-foreground">{poi.name}</div>
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
-            <span className="font-semibold text-primary">{formatDistance(poi.distance)}</span>
-            {stars !== undefined && (
-              <span className="inline-flex items-center gap-0.5 text-amber-500">
-                · <Star size={10} className="fill-amber-500 stroke-amber-500" />
-                <span className="font-semibold">{stars.toFixed(1)}</span>
-              </span>
-            )}
-            {priceStr && <span className="font-semibold">· {priceStr}</span>}
-            {kind === "restaurant" && poi.cuisine && (
-              <span className="capitalize">· {poi.cuisine}</span>
-            )}
-          </div>
-          {poi.address && (
-            <div className="mt-1 truncate text-[11px] text-muted-foreground">{poi.address}</div>
-          )}
-        </div>
-      </div>
-      <a
-        href={href}
-        target="_top"
-        className="mt-2 inline-flex items-center gap-1 rounded-full bg-gradient-soft px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:opacity-80"
-      >
-        {label} <ExternalLink size={11} />
-      </a>
-    </div>
-  );
-}
-
-function formatDistance(m: number): string {
-  const miles = m / 1609.344;
-  if (miles < 0.1) {
-    const feet = Math.round(m * 3.28084);
-    return `${feet} ft`;
-  }
-  return miles < 10 ? `${miles.toFixed(1)} mi` : `${Math.round(miles)} mi`;
 }
 
 function formatDateRange(startIso: string, endIso: string): string {
