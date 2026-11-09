@@ -6,49 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-const arcgisServerStubPrefix = "\0arcgis-server-stub:";
-
-/**
- * ArcGIS is an 81 MB browser SDK. Letting the server build follow its dynamic
- * imports makes Nitro transform thousands of modules that can never execute
- * during SSR and exhausts the deployment worker's heap.
- *
- * The map and directions only run after hydration, so server builds receive a
- * tiny inert module while client builds continue to bundle the real SDK.
- */
-const excludeArcgisFromServerBuild = {
-  name: "exclude-arcgis-from-server-build",
-  enforce: "pre" as const,
-  // Vite 7 creates separate client and Nitro environments. Installing this
-  // plugin only in non-client environments is more reliable than inferring
-  // the environment from resolveId's optional `ssr` flag (build:dev does not
-  // consistently set that flag for Nitro's module graph).
-  applyToEnvironment(environment: { name: string }) {
-    return environment.name !== "client";
-  },
-  resolveId(source: string) {
-    if (source === "@arcgis/core" || source.startsWith("@arcgis/core/")) {
-      return `${arcgisServerStubPrefix}${source}`;
-    }
-    return null;
-  },
-  load(id: string) {
-    if (!id.startsWith(arcgisServerStubPrefix)) return null;
-    if (id.split("?", 1)[0]?.endsWith(".css")) return "";
-    return `
-      export default class ArcgisServerStub {}
-      export const solve = () => { throw new Error("ArcGIS is only available in the browser") }
-      export const fetchServiceDescription = solve
-      export const suggestLocations = solve
-      export const addressToLocations = solve
-    `;
-  },
-};
-
 export default defineConfig({
-  vite: {
-    plugins: [excludeArcgisFromServerBuild],
-  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

@@ -17,10 +17,12 @@ export const Route = createFileRoute("/")({
         content:
           "Explore all 16 host stadiums of the FIFA World Cup 2026 across the USA, Canada, and Mexico on an interactive map.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "FIFA 2026 Stadium Explorer" },
       {
         property: "og:description",
-        content: "Interactive ArcGIS map of every FIFA World Cup 2026 host stadium.",
+        content: "Interactive stadium map of every FIFA World Cup 2026 host stadium.",
       },
     ],
   }),
@@ -60,7 +62,7 @@ function Index() {
 
   return (
     <div className="relative flex h-dvh w-screen overflow-hidden">
-      <main className="relative flex-1 min-w-0">
+      <main className="relative isolate flex-1 min-w-0">
         {mounted ? (
           <Suspense
             fallback={

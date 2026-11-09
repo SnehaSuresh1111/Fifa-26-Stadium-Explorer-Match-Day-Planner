@@ -1,283 +1,114 @@
 import { useEffect, useRef, useState } from "react";
-import Map from "@arcgis/core/Map";
-import MapView from "@arcgis/core/views/MapView";
-import Graphic from "@arcgis/core/Graphic";
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import Point from "@arcgis/core/geometry/Point";
-import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
-import Home from "@arcgis/core/widgets/Home";
-import esriConfig from "@arcgis/core/config";
-import "@arcgis/core/assets/esri/themes/light/main.css";
+import L from "leaflet";
+import { RotateCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import type { Poi } from "@/lib/overpass";
 import type { FanZone } from "@/data/fanzones";
-import { useServerFn } from "@tanstack/react-start";
-import { getArcgisKey } from "@/lib/arcgis.functions";
-import { setMapView } from "@/lib/arcgisMapHolder";
-
-const ACCENT = "#C0392B";
-const PRIMARY = "#1C4E8A";
-const HOTEL_COLOR = "#f59e0b";
-const FOOD_COLOR = "#10b981";
-const FANZONE_COLOR = "#6C3483";
-
-const pinSvg = (color: string) => {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='44' height='56' viewBox='0 0 44 56'>
-    <defs><filter id='s' x='-50%' y='-50%' width='200%' height='200%'>
-      <feDropShadow dx='0' dy='2' stdDeviation='1.5' flood-opacity='0.35'/></filter></defs>
-    <path filter='url(#s)' fill='${color}' stroke='white' stroke-width='2'
-      d='M22 2C11 2 3 10 3 21c0 14 19 33 19 33s19-19 19-33C41 10 33 2 22 2z'/>
-    <circle cx='22' cy='21' r='9' fill='white'/>
-    <path fill='${color}' d='M22 14l2.4 1.8-.9 2.9h-3l-.9-2.9zM22 28l-2.4-1.8.9-2.9h3l.9 2.9zM15.6 21l1.8-2.4 2.9.9v3l-2.9.9zM28.4 21l-1.8 2.4-2.9-.9v-3l2.9-.9z'/>
-  </svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
-};
-
-const dotSvg = (color: string) => {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
-    <circle cx='12' cy='12' r='8' fill='${color}' stroke='white' stroke-width='2.5'/>
-  </svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
-};
-
-type HitWithGraphic = { graphic?: Graphic };
 
 interface Props {
   selectedId: string | null;
-  onSelect: (s: Stadium) => void;
+  onSelect: (stadium: Stadium) => void;
   flyToCity: string | null;
   pois?: Poi[];
   poiKind?: "hotels" | "eatdrink" | "fanzones" | null;
   fanzones?: FanZone[];
 }
 
-export default function StadiumMap({
-  selectedId,
-  onSelect,
-  flyToCity,
-  pois = [],
-  poiKind = null,
-  fanzones = [],
-}: Props) {
+function pin(selected = false) {
+  return L.divIcon({
+    className: "stadium-marker-container",
+    html: `<span class="stadium-marker${selected ? " is-selected" : ""}"><span>⚽</span></span>`,
+    iconSize: [32, 40], iconAnchor: [16, 40],
+  });
+}
+
+function popup(title: string, details: string) {
+  const container = document.createElement("div");
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const body = document.createElement("div");
+  body.textContent = details;
+  container.append(heading, body);
+  return container;
+}
+
+export default function StadiumMap({ selectedId, onSelect, flyToCity, pois = [], poiKind = null, fanzones = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<MapView | null>(null);
-  const layerRef = useRef<GraphicsLayer | null>(null);
-  const hotelsLayerRef = useRef<GraphicsLayer | null>(null);
-  const eatLayerRef = useRef<GraphicsLayer | null>(null);
-  const fanzoneLayerRef = useRef<GraphicsLayer | null>(null);
-  const mapRef = useRef<Map | null>(null);
-  const [apiKey, setApiKey] = useState<string | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef(new Map<string, L.Marker>());
+  const selectRef = useRef(onSelect);
   const [reloadKey, setReloadKey] = useState(0);
-  const fetchKey = useServerFn(getArcgisKey);
+  const [unavailable, setUnavailable] = useState(false);
+  useEffect(() => { selectRef.current = onSelect; }, [onSelect]);
 
   useEffect(() => {
-    let cancelled = false;
-    fetchKey()
-      .then((r) => {
-        if (!cancelled) setApiKey(r.key || "");
-      })
-      .catch(() => setApiKey(""));
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchKey]);
-
-  useEffect(() => {
-    if (!containerRef.current || apiKey === null) return;
-    if (apiKey) esriConfig.apiKey = apiKey;
-    const layer = new GraphicsLayer();
-    const hotelsLayer = new GraphicsLayer({ id: "hotels-layer", visible: false });
-    const eatLayer = new GraphicsLayer({ id: "eatdrink-layer", visible: false });
-    const fanzoneLayer = new GraphicsLayer({ id: "fanzones-layer", visible: false });
-    const map = new Map({
-      basemap: "streets-navigation-vector",
-      layers: [hotelsLayer, eatLayer, fanzoneLayer, layer],
-    });
-    const view = new MapView({
-      container: containerRef.current,
-      map,
-      center: [-95, 40],
-      zoom: 3,
-      ui: { components: ["zoom"] },
-      popup: { dockEnabled: false, collapseEnabled: false } as any,
-    });
-    view.ui.add(new Home({ view }), "top-left");
-
-    const defaultSym = new PictureMarkerSymbol({
-      url: pinSvg(ACCENT),
-      width: 32,
-      height: 40,
-      yoffset: 16,
-    });
-
-    stadiums.forEach((s) => {
-      const g = new Graphic({
-        geometry: new Point({ longitude: s.longitude, latitude: s.latitude }),
-        symbol: defaultSym.clone(),
-        attributes: { ...s },
-      });
-      layer.add(g);
-    });
-
-    layerRef.current = layer;
-    hotelsLayerRef.current = hotelsLayer;
-    eatLayerRef.current = eatLayer;
-    fanzoneLayerRef.current = fanzoneLayer;
-    viewRef.current = view;
+    const container = containerRef.current;
+    if (!container) return;
+    setUnavailable(false);
+    const map = L.map(container).setView([40, -95], 3);
     mapRef.current = map;
-    setMapView(view, apiKey || null);
-
-    view.on("click", async (e) => {
-      const r = await view.hitTest(e);
-      const hit = r.results.find((result) => {
-        const maybeHit = result as HitWithGraphic;
-        return maybeHit.graphic?.layer === layer;
-      });
-      const graphic = (hit as HitWithGraphic | undefined)?.graphic;
-      if (graphic) {
-        onSelect(graphic.attributes as Stadium);
-      }
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+      // Only request visible tiles after movement; do not prefetch or download offline.
+      updateWhenIdle: true, updateWhenZooming: false, keepBuffer: 0,
+    }).on("tileerror", () => setUnavailable(true)).addTo(map);
+    L.control.scale({ metric: false, imperial: true }).addTo(map);
+    stadiums.forEach((stadium) => {
+      const marker = L.marker([stadium.latitude, stadium.longitude], {
+        icon: pin(), title: stadium.name, alt: stadium.name,
+        keyboard: true,
+      }).on("click", () => selectRef.current(stadium)).addTo(map);
+      markersRef.current.set(stadium.id, marker);
     });
-
+    const observer = new ResizeObserver(() => map.invalidateSize());
+    observer.observe(container);
     return () => {
-      setMapView(null, null);
-      view.destroy();
-      viewRef.current = null;
+      observer.disconnect();
+      map.remove();
       mapRef.current = null;
+      markersRef.current.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiKey, reloadKey]);
+  }, [reloadKey]);
 
   useEffect(() => {
-    const layer = layerRef.current;
-    if (!layer) return;
-    layer.graphics.forEach((g) => {
-      const isSel = g.attributes.id === selectedId;
-      g.symbol = new PictureMarkerSymbol({
-        url: pinSvg(isSel ? PRIMARY : ACCENT),
-        width: isSel ? 40 : 32,
-        height: isSel ? 50 : 40,
-        yoffset: isSel ? 20 : 16,
-      });
-    });
-  }, [selectedId]);
+    markersRef.current.forEach((marker, id) => marker.setIcon(pin(id === selectedId)));
+  }, [selectedId, reloadKey]);
 
   useEffect(() => {
-    if (!flyToCity || !viewRef.current) return;
-    const targets = stadiums.filter((s) => s.city === flyToCity);
-    if (!targets.length) return;
-    viewRef.current.goTo({
-      center: [targets[0].longitude, targets[0].latitude],
-      zoom: 11,
-    });
+    const stadium = stadiums.find((s) => s.city === flyToCity);
+    if (stadium) mapRef.current?.setView([stadium.latitude, stadium.longitude], 11, { animate: true });
   }, [flyToCity]);
 
   useEffect(() => {
-    const hotels = hotelsLayerRef.current;
-    const eat = eatLayerRef.current;
-    if (!hotels || !eat) return;
-    hotels.removeAll();
-    eat.removeAll();
-    pois.forEach((p) => {
-      if (p.kind === "hotel") {
-        hotels.add(
-          new Graphic({
-            geometry: new Point({ longitude: p.lon, latitude: p.lat }),
-            symbol: new PictureMarkerSymbol({
-              url: dotSvg(HOTEL_COLOR),
-              width: 18,
-              height: 18,
-            }),
-            attributes: { name: p.name, address: p.address ?? "" },
-            popupTemplate: {
-              title: "{name}",
-              content: "{address}",
-            } as any,
-          }),
-        );
-      } else {
-        const isBar = p.subKind === "sports_bar";
-        const size = isBar ? 18 : 13;
-        eat.add(
-          new Graphic({
-            geometry: new Point({ longitude: p.lon, latitude: p.lat }),
-            symbol: new PictureMarkerSymbol({
-              url: dotSvg(FOOD_COLOR),
-              width: size,
-              height: size,
-            }),
-            attributes: { name: p.name, category: p.categoryLabel ?? "" },
-            popupTemplate: {
-              title: "{name}",
-              content: "{category}",
-            } as any,
-          }),
-        );
-      }
-    });
-  }, [pois]);
+    const map = mapRef.current;
+    if (!map) return;
+    const group = L.layerGroup().addTo(map);
+    if (poiKind === "fanzones") {
+      fanzones.forEach((zone) => {
+        L.marker([zone.lat, zone.lon], {
+          icon: L.divIcon({ className: "poi-marker fanzone-marker", html: "", iconSize: [20, 20] }),
+          title: zone.name,
+        }).bindPopup(popup(zone.name, `${zone.venue} · ${zone.startDate} – ${zone.endDate}${zone.isFreeEntry ? " · Free entry" : ""}`), { maxWidth: 220 }).addTo(group);
+      });
+    } else if (poiKind) {
+      pois.filter((poi) => poiKind === "hotels" ? poi.kind === "hotel" : poi.kind === "restaurant").forEach((poi) => {
+        L.marker([poi.lat, poi.lon], {
+          icon: L.divIcon({ className: `poi-marker ${poi.kind === "hotel" ? "hotel-marker" : "food-marker"}`, html: "", iconSize: [18, 18] }),
+          title: poi.name,
+        }).bindPopup(popup(poi.name, poi.address ?? poi.categoryLabel ?? ""), { maxWidth: 220 }).addTo(group);
+      });
+    }
+    return () => { group.remove(); };
+  }, [pois, poiKind, fanzones, reloadKey]);
 
-  useEffect(() => {
-    const hotels = hotelsLayerRef.current;
-    const eat = eatLayerRef.current;
-    if (hotels) hotels.visible = poiKind === "hotels";
-    if (eat) eat.visible = poiKind === "eatdrink";
-    const fz = fanzoneLayerRef.current;
-    if (fz) fz.visible = poiKind === "fanzones";
-  }, [poiKind]);
-
-  useEffect(() => {
-    const fz = fanzoneLayerRef.current;
-    if (!fz) return;
-    fz.removeAll();
-    fanzones.forEach((z) => {
-      fz.add(
-        new Graphic({
-          geometry: new Point({ longitude: z.lon, latitude: z.lat }),
-          symbol: new PictureMarkerSymbol({
-            url: dotSvg(FANZONE_COLOR),
-            width: 22,
-            height: 22,
-          }),
-          attributes: {
-            name: z.name,
-            venue: z.venue,
-            dates: `${z.startDate} – ${z.endDate}`,
-            free: z.isFreeEntry ? "FREE ENTRY" : "",
-          },
-          popupTemplate: {
-            title: "{name}",
-            content: "<b>{venue}</b><br/>{dates}<br/><span style='color:#059669;font-weight:700'>{free}</span>",
-          } as any,
-        }),
-      );
-    });
-  }, [fanzones]);
-
-  if (apiKey === null) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-        Loading map…
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div
-        key={reloadKey}
-        ref={containerRef}
-        className="absolute inset-0 h-full min-h-screen w-full"
-      />
-      <button
-        type="button"
-        onClick={() => setReloadKey((k) => k + 1)}
-        className="absolute right-3 bottom-3 z-10 rounded-md bg-white/95 px-3 py-2 text-xs font-semibold text-slate-800 shadow-md ring-1 ring-black/10 hover:bg-white"
-        aria-label="Reload map"
-        title="Reload map"
-      >
-        ↻ Reload map
-      </button>
-    </>
-  );
+  return <>
+    <div ref={containerRef} className="absolute inset-0 h-full w-full" aria-label="Stadium map" />
+    {unavailable && <div role="status" className="absolute left-14 top-3 z-[500] max-w-64 rounded-md bg-background p-3 text-xs text-destructive shadow-soft">OpenStreetMap tiles are unavailable. Stadium markers remain available; try Reload map later.</div>}
+    <div className="absolute bottom-8 right-3 z-[500] flex gap-2">
+      <Button variant="outline" size="sm" onClick={() => mapRef.current?.setView([40, -95], 3)} title="Show all stadiums">⌂</Button>
+      <Button variant="outline" size="sm" onClick={() => setReloadKey((key) => key + 1)} aria-label="Reload map"><RotateCw /> Reload map</Button>
+    </div>
+  </>;
 }

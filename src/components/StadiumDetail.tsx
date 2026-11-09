@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { stadiums, type Stadium } from "@/data/stadiums";
 import { transportData } from "@/data/transport";
-import { fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
+import { PLACES_UNAVAILABLE, fetchHotels, fetchRestaurants, bookingUrl, gmapsPlaceUrl, type Poi } from "@/lib/overpass";
 import { fanzones, type FanZone } from "@/data/fanzones";
 import DirectionsPanel from "@/components/DirectionsPanel";
 
@@ -283,7 +283,7 @@ function TransportTab({ stadium }: { stadium: Stadium }) {
     <div className="space-y-3">
       <div>
         <div className="mb-2 flex items-center gap-2 px-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-          <Navigation size={12} /> Live Directions
+          <Navigation size={12} /> Directions
         </div>
         <DirectionsPanel stadium={stadium} />
       </div>
@@ -437,7 +437,7 @@ function PoiList({
   if (error) {
     return (
       <div className="rounded-2xl bg-destructive/10 p-4 text-xs text-destructive">
-        Couldn't reach ArcGIS Places. Please try again shortly.
+        {PLACES_UNAVAILABLE}
       </div>
     );
   }

@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -185,3 +186,22 @@
   -webkit-backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid color-mix(in oklab, white 60%, transparent);
 }
+
+/* Leaflet stays below the existing sidebar. Marker colors are semantic map tokens. */
+:root {
+  --map-stadium: oklch(0.55 0.19 27);
+  --map-selected: oklch(0.43 0.12 255);
+  --map-hotel: oklch(0.77 0.16 75);
+  --map-food: oklch(0.67 0.17 160);
+  --map-fanzone: oklch(0.44 0.14 310);
+}
+.leaflet-container { z-index: 0; font-family: var(--font-sans); background: var(--muted); }
+.stadium-marker { display: flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: var(--map-stadium); border: 2px solid var(--card); box-shadow: var(--shadow-soft); }
+.stadium-marker > span { transform: rotate(45deg); font-size: 16px; }
+.stadium-marker.is-selected { background: var(--map-selected); }
+.poi-marker { border: 2px solid var(--card); border-radius: 50%; box-shadow: var(--shadow-soft); }
+.fanzone-marker { background: var(--map-fanzone); }
+.hotel-marker { background: var(--map-hotel); }
+.food-marker { background: var(--map-food); }
+.leaflet-popup-content-wrapper { background: var(--popover); color: var(--popover-foreground); border-radius: 8px; }
+.leaflet-popup-content { margin: 10px 14px; font-size: 12px; }
