@@ -1,1801 +1,210 @@
 {
-  "source": "OpenStreetMap contributors",
-  "license": "ODbL-1.0",
-  "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
-  "attributionUrl": "https://www.openstreetmap.org/copyright",
-  "retrievedDate": "2026-11-09",
-  "radiusMiles": 3,
-  "stadiums": {
-    "sofi": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "1001 S. Stadium Drive, Inglewood, CA 90301",
-        "travelUrl": "https://www.sofistadium.com/plan-your-visit/parking-and-transportation",
-        "sourceUrl": "https://www.sofistadium.com/plan-your-visit/parking-and-transportation",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "metlife": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "One MetLife Stadium Drive, East Rutherford, NJ 07073",
-        "travelUrl": "https://www.metlifestadium.com/plan-your-visit/public-transportation",
-        "sourceUrl": "https://metlifestadium.com",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "att": {
-      "status": "retrieved",
-      "retrievalBlocker": null,
-      "places": [
-        {
-          "id": "node/600486156",
-          "name": "Hooters",
-          "category": "restaurant",
-          "lat": 32.7581883,
-          "lon": -97.0965072,
-          "sourceUrl": "https://www.openstreetmap.org/node/600486156",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "burger"
-        },
-        {
-          "id": "node/1129470382",
-          "name": "Humperdinks",
-          "category": "restaurant",
-          "lat": 32.7497637,
-          "lon": -97.0769526,
-          "sourceUrl": "https://www.openstreetmap.org/node/1129470382",
-          "retrievedDate": "2026-11-09",
-          "address": "700 Six Flags Drive 76011",
-          "cuisine": "american"
-        },
-        {
-          "id": "node/1129587995",
-          "name": "Pappadeaux",
-          "category": "restaurant",
-          "lat": 32.7587202,
-          "lon": -97.0907203,
-          "sourceUrl": "https://www.openstreetmap.org/node/1129587995",
-          "retrievedDate": "2026-11-09",
-          "address": "1304 East Copeland Road 76011",
-          "cuisine": "fish"
-        },
-        {
-          "id": "node/1129588117",
-          "name": "Chilli's Bar and Grill",
-          "category": "restaurant",
-          "lat": 32.7586266,
-          "lon": -97.0959934,
-          "sourceUrl": "https://www.openstreetmap.org/node/1129588117",
-          "retrievedDate": "2026-11-09",
-          "address": "924 East Copeland Road 76011"
-        },
-        {
-          "id": "node/1130174075",
-          "name": "El Fenix",
-          "category": "restaurant",
-          "lat": 32.7584799,
-          "lon": -97.0875528,
-          "sourceUrl": "https://www.openstreetmap.org/node/1130174075",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "node/1130174561",
-          "name": "Texas Land & Cattle",
-          "category": "restaurant",
-          "lat": 32.7584484,
-          "lon": -97.0880517,
-          "sourceUrl": "https://www.openstreetmap.org/node/1130174561",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "steak_house"
-        },
-        {
-          "id": "node/3056782500",
-          "name": "Pie Five Pizza Co",
-          "category": "restaurant",
-          "lat": 32.7319097,
-          "lon": -97.1085633,
-          "sourceUrl": "https://www.openstreetmap.org/node/3056782500",
-          "retrievedDate": "2026-11-09",
-          "address": "501 Spaniolo Drive Arlington 76010",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "node/3149717691",
-          "name": "Panda House Chinese Restaurant",
-          "category": "restaurant",
-          "lat": 32.7228414,
-          "lon": -97.1142709,
-          "sourceUrl": "https://www.openstreetmap.org/node/3149717691",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "chinese"
-        },
-        {
-          "id": "node/3149717698",
-          "name": "iCafe",
-          "category": "cafe",
-          "lat": 32.7359527,
-          "lon": -97.1149429,
-          "sourceUrl": "https://www.openstreetmap.org/node/3149717698",
-          "retrievedDate": "2026-11-09",
-          "address": "150 South Cooper Street 76013",
-          "cuisine": "japanese"
-        },
-        {
-          "id": "node/5847238524",
-          "name": "Suzuchi Sushi & Grill",
-          "category": "restaurant",
-          "lat": 32.7563085,
-          "lon": -97.0963704,
-          "sourceUrl": "https://www.openstreetmap.org/node/5847238524",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "sushi"
-        },
-        {
-          "id": "node/5847238526",
-          "name": "Blue Mesa Grill",
-          "category": "restaurant",
-          "lat": 32.756497,
-          "lon": -97.0978054,
-          "sourceUrl": "https://www.openstreetmap.org/node/5847238526",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/5847238809",
-          "name": "BoomerJack's",
-          "category": "restaurant",
-          "lat": 32.7568347,
-          "lon": -97.0978074,
-          "sourceUrl": "https://www.openstreetmap.org/node/5847238809",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/6463456654",
-          "name": "J. Gilligan's Bar & Grill",
-          "category": "restaurant",
-          "lat": 32.7350984,
-          "lon": -97.1030821,
-          "sourceUrl": "https://www.openstreetmap.org/node/6463456654",
-          "retrievedDate": "2026-11-09",
-          "address": "400 East Abram Street Arlington 76010",
-          "cuisine": "american"
-        },
-        {
-          "id": "node/6594885881",
-          "name": "Cicis",
-          "category": "restaurant",
-          "lat": 32.7478406,
-          "lon": -97.0977158,
-          "sourceUrl": "https://www.openstreetmap.org/node/6594885881",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "pizza;buffet"
-        },
-        {
-          "id": "node/6703552541",
-          "name": "Troy's",
-          "category": "restaurant",
-          "lat": 32.7495333,
-          "lon": -97.0853532,
-          "sourceUrl": "https://www.openstreetmap.org/node/6703552541",
-          "retrievedDate": "2026-11-09",
-          "address": "1650 E. Randol Mill Rd.",
-          "cuisine": "american"
-        },
-        {
-          "id": "node/7164922793",
-          "name": "Top Super Buffet",
-          "category": "restaurant",
-          "lat": 32.7089918,
-          "lon": -97.0827507,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922793",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "asian;buffet;dim_sum;sushi;seafood"
-        },
-        {
-          "id": "node/7164922808",
-          "name": "Golden Chinese BBQ",
-          "category": "restaurant",
-          "lat": 32.7076833,
-          "lon": -97.0810598,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922808",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "chinese;barbecue"
-        },
-        {
-          "id": "node/7164922810",
-          "name": "Hủ Tiếu Mỹ Tho",
-          "category": "restaurant",
-          "lat": 32.7077178,
-          "lon": -97.0808344,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922810",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "vietnamese;noodle"
-        },
-        {
-          "id": "node/7164922812",
-          "name": "N’Joy",
-          "category": "cafe",
-          "lat": 32.7075497,
-          "lon": -97.0808313,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922812",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "tea"
-        },
-        {
-          "id": "node/7164922829",
-          "name": "Bún Bò Huế Đức Chương",
-          "category": "restaurant",
-          "lat": 32.7077167,
-          "lon": -97.0821621,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922829",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "vietnamese;noodle"
-        },
-        {
-          "id": "node/7164922831",
-          "name": "Quán Miền Tây",
-          "category": "restaurant",
-          "lat": 32.709125,
-          "lon": -97.0807416,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922831",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "vietnamese"
-        },
-        {
-          "id": "node/7164922835",
-          "name": "Yến’s",
-          "category": "cafe",
-          "lat": 32.7090408,
-          "lon": -97.0808654,
-          "sourceUrl": "https://www.openstreetmap.org/node/7164922835",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/8960884922",
-          "name": "Ka'nin",
-          "category": "restaurant",
-          "lat": 32.7650312,
-          "lon": -97.0640612,
-          "sourceUrl": "https://www.openstreetmap.org/node/8960884922",
-          "retrievedDate": "2026-11-09",
-          "address": "1175 North Watson Road Arlington 76011",
-          "cuisine": "filipino"
-        },
-        {
-          "id": "node/9201279872",
-          "name": "Gino's East Chicago Pizza",
-          "category": "restaurant",
-          "lat": 32.7587474,
-          "lon": -97.0902236,
-          "sourceUrl": "https://www.openstreetmap.org/node/9201279872",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "node/9270143237",
-          "name": "Aladdin Restaurant",
-          "category": "restaurant",
-          "lat": 32.7171535,
-          "lon": -97.1142574,
-          "sourceUrl": "https://www.openstreetmap.org/node/9270143237",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/9525396352",
-          "name": "Connection Cafe",
-          "category": "cafe",
-          "lat": 32.7314682,
-          "lon": -97.1108349,
-          "sourceUrl": "https://www.openstreetmap.org/node/9525396352",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/9611647496",
-          "name": "Torchy's Tacos",
-          "category": "restaurant",
-          "lat": 32.7630756,
-          "lon": -97.0965583,
-          "sourceUrl": "https://www.openstreetmap.org/node/9611647496",
-          "retrievedDate": "2026-11-09",
-          "address": "North Collins Street Arlington 76011",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "node/9647284417",
-          "name": "Inclusion Coffee",
-          "category": "cafe",
-          "lat": 32.7357387,
-          "lon": -97.1069128,
-          "sourceUrl": "https://www.openstreetmap.org/node/9647284417",
-          "retrievedDate": "2026-11-09",
-          "address": "101 East Abram Street Arlington 76010",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "node/9647289317",
-          "name": "Kintaro Ramen",
-          "category": "restaurant",
-          "lat": 32.7357471,
-          "lon": -97.1067347,
-          "sourceUrl": "https://www.openstreetmap.org/node/9647289317",
-          "retrievedDate": "2026-11-09",
-          "address": "101 East Abram Street Arlington 76010",
-          "cuisine": "noodle"
-        },
-        {
-          "id": "node/9647289319",
-          "name": "Amore Mio Trattoria",
-          "category": "restaurant",
-          "lat": 32.7357269,
-          "lon": -97.1060738,
-          "sourceUrl": "https://www.openstreetmap.org/node/9647289319",
-          "retrievedDate": "2026-11-09",
-          "address": "101 East Abram Street Arlington 76010",
-          "cuisine": "italian"
-        },
-        {
-          "id": "node/9647289517",
-          "name": "Kung Fu Tea",
-          "category": "cafe",
-          "lat": 32.7357298,
-          "lon": -97.1062257,
-          "sourceUrl": "https://www.openstreetmap.org/node/9647289517",
-          "retrievedDate": "2026-11-09",
-          "address": "101 East Abram Street Arlington 76010",
-          "cuisine": "bubble_tea"
-        },
-        {
-          "id": "node/11206784237",
-          "name": "New York Eats",
-          "category": "restaurant",
-          "lat": 32.7248925,
-          "lon": -97.1132733,
-          "sourceUrl": "https://www.openstreetmap.org/node/11206784237",
-          "retrievedDate": "2026-11-09",
-          "address": "604 B Doug Russell Road 76010",
-          "cuisine": "mediterranean"
-        },
-        {
-          "id": "node/11206794137",
-          "name": "DING TEA Taiwan",
-          "category": "cafe",
-          "lat": 32.7237615,
-          "lon": -97.1154168,
-          "sourceUrl": "https://www.openstreetmap.org/node/11206794137",
-          "retrievedDate": "2026-11-09",
-          "address": "1302 South Cooper Street 76013",
-          "cuisine": "bubble_tea;tea"
-        },
-        {
-          "id": "node/11516983725",
-          "name": "Dino's Subs",
-          "category": "restaurant",
-          "lat": 32.7069676,
-          "lon": -97.0971904,
-          "sourceUrl": "https://www.openstreetmap.org/node/11516983725",
-          "retrievedDate": "2026-11-09",
-          "address": "2221 South Collins Street Arlington 76010",
-          "cuisine": "sandwich"
-        },
-        {
-          "id": "node/11537919641",
-          "name": "Starbucks",
-          "category": "cafe",
-          "lat": 32.7328628,
-          "lon": -97.1168097,
-          "sourceUrl": "https://www.openstreetmap.org/node/11537919641",
-          "retrievedDate": "2026-11-09",
-          "address": "440 Nedderman Drive Arlington 76019",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "node/11537919642",
-          "name": "Maverick Cafe",
-          "category": "restaurant",
-          "lat": 32.7327532,
-          "lon": -97.1173127,
-          "sourceUrl": "https://www.openstreetmap.org/node/11537919642",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/11608203269",
-          "name": "Nehemiah Coffee Company",
-          "category": "cafe",
-          "lat": 32.7627148,
-          "lon": -97.1072062,
-          "sourceUrl": "https://www.openstreetmap.org/node/11608203269",
-          "retrievedDate": "2026-11-09",
-          "address": "505 Kiosk 100 East Lamar Boulevard 76011",
-          "cuisine": "bagel;breakfast;coffee_shop;sandwich;tea"
-        },
-        {
-          "id": "node/11817350093",
-          "name": "On Tap",
-          "category": "bar",
-          "lat": 32.7384963,
-          "lon": -97.1060411,
-          "sourceUrl": "https://www.openstreetmap.org/node/11817350093",
-          "retrievedDate": "2026-11-09",
-          "address": "200 North Mesquite Street Arlington 76011"
-        },
-        {
-          "id": "node/11833278069",
-          "name": "Bethany Café",
-          "category": "cafe",
-          "lat": 32.721681,
-          "lon": -97.1152976,
-          "sourceUrl": "https://www.openstreetmap.org/node/11833278069",
-          "retrievedDate": "2026-11-09",
-          "address": "705 West Park Row Drive 76103"
-        },
-        {
-          "id": "node/12327807701",
-          "name": "Ocean Chinese Seafood Restaurant",
-          "category": "restaurant",
-          "lat": 32.7199868,
-          "lon": -97.0807305,
-          "sourceUrl": "https://www.openstreetmap.org/node/12327807701",
-          "retrievedDate": "2026-11-09",
-          "address": "1510 New York Avenue 76010"
-        },
-        {
-          "id": "node/12481010201",
-          "name": "Pho Palace",
-          "category": "restaurant",
-          "lat": 32.7087948,
-          "lon": -97.0982733,
-          "sourceUrl": "https://www.openstreetmap.org/node/12481010201",
-          "retrievedDate": "2026-11-09",
-          "address": "South Collins Street",
-          "cuisine": "vietnamese"
-        },
-        {
-          "id": "node/12877638448",
-          "name": "HTeaO",
-          "category": "cafe",
-          "lat": 32.7714399,
-          "lon": -97.0967085,
-          "sourceUrl": "https://www.openstreetmap.org/node/12877638448",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "node/12976159692",
-          "name": "Michoacana Meat Market",
-          "category": "restaurant",
-          "lat": 32.7219127,
-          "lon": -97.0965667,
-          "sourceUrl": "https://www.openstreetmap.org/node/12976159692",
-          "retrievedDate": "2026-11-09",
-          "address": "923 E Park Row Dr Arlington 76010",
-          "cuisine": "mexican_food;_comida_mexicana;_restaurant_inside_store;_helotes;_elotes;_corn_in_a_cup;_corn_in_a_cob;_tamales_de_helote_tierno"
-        },
-        {
-          "id": "node/13194447587",
-          "name": "Mon Viet Cafe",
-          "category": "restaurant",
-          "lat": 32.7072689,
-          "lon": -97.0807545,
-          "sourceUrl": "https://www.openstreetmap.org/node/13194447587",
-          "retrievedDate": "2026-11-09",
-          "address": "1818 Pioneer Parkway",
-          "cuisine": "vietnamese;coffee_shop"
-        },
-        {
-          "id": "node/13278172701",
-          "name": "Hurtado Barbecue",
-          "category": "restaurant",
-          "lat": 32.7378271,
-          "lon": -97.1050289,
-          "sourceUrl": "https://www.openstreetmap.org/node/13278172701",
-          "retrievedDate": "2026-11-09",
-          "address": "205 East Front Street 76011"
-        },
-        {
-          "id": "node/13386280355",
-          "name": "Tandoor Indian Restaurant",
-          "category": "restaurant",
-          "lat": 32.7522894,
-          "lon": -97.1334068,
-          "sourceUrl": "https://www.openstreetmap.org/node/13386280355",
-          "retrievedDate": "2026-11-09",
-          "address": "1200 North Fielder Road Arlington 76012",
-          "cuisine": "mughlai;indian"
-        },
-        {
-          "id": "node/13515807147",
-          "name": "Los Molcas Tacos",
-          "category": "restaurant",
-          "lat": 32.735719,
-          "lon": -97.1023692,
-          "sourceUrl": "https://www.openstreetmap.org/node/13515807147",
-          "retrievedDate": "2026-11-09",
-          "address": "505 East Abram Street Arlington 76010",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "node/13515807148",
-          "name": "Flying Fish",
-          "category": "restaurant",
-          "lat": 32.7353892,
-          "lon": -97.1044542,
-          "sourceUrl": "https://www.openstreetmap.org/node/13515807148",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "seafood"
-        },
-        {
-          "id": "node/13516043901",
-          "name": "ON TAP",
-          "category": "bar",
-          "lat": 32.7384971,
-          "lon": -97.1058603,
-          "sourceUrl": "https://www.openstreetmap.org/node/13516043901",
-          "retrievedDate": "2026-11-09",
-          "address": "105 North Mesquite Street"
-        },
-        {
-          "id": "node/13516052701",
-          "name": "Grease Monkey Burger Shop & Social Club",
-          "category": "bar",
-          "lat": 32.7383233,
-          "lon": -97.1059936,
-          "sourceUrl": "https://www.openstreetmap.org/node/13516052701",
-          "retrievedDate": "2026-11-09",
-          "address": "200 North Mesquite Street"
-        },
-        {
-          "id": "node/13643806072",
-          "name": "Tic-Taco",
-          "category": "restaurant",
-          "lat": 32.7216841,
-          "lon": -97.1156037,
-          "sourceUrl": "https://www.openstreetmap.org/node/13643806072",
-          "retrievedDate": "2026-11-09",
-          "address": "715 West Park Row Drive Arlington 76103",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "node/13701080001",
-          "name": "The Tipsy Oak",
-          "category": "restaurant",
-          "lat": 32.7378782,
-          "lon": -97.1042861,
-          "sourceUrl": "https://www.openstreetmap.org/node/13701080001",
-          "retrievedDate": "2026-11-09",
-          "address": "301 East Front Street 76011"
-        },
-        {
-          "id": "node/13785351061",
-          "name": "Granny's Grill",
-          "category": "restaurant",
-          "lat": 32.756358,
-          "lon": -97.0697695,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785351061",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785352828",
-          "name": "Etienne's Cafe",
-          "category": "restaurant",
-          "lat": 32.7566859,
-          "lon": -97.0705132,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785352828",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785563796",
-          "name": "Casa de las Banderas",
-          "category": "restaurant",
-          "lat": 32.7552155,
-          "lon": -97.0712529,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785563796",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785717037",
-          "name": "Cinnabon",
-          "category": "restaurant",
-          "lat": 32.7560386,
-          "lon": -97.0717519,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785717037",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785717239",
-          "name": "Chop Six",
-          "category": "restaurant",
-          "lat": 32.7578051,
-          "lon": -97.0714676,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785717239",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785775313",
-          "name": "Bubba's Hot Dogs",
-          "category": "restaurant",
-          "lat": 32.756589,
-          "lon": -97.0725436,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785775313",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13785775315",
-          "name": "E.G. Sugarwater's",
-          "category": "restaurant",
-          "lat": 32.7564906,
-          "lon": -97.0723496,
-          "sourceUrl": "https://www.openstreetmap.org/node/13785775315",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13788036936",
-          "name": "Macho Nacho",
-          "category": "restaurant",
-          "lat": 32.757843,
-          "lon": -97.0684165,
-          "sourceUrl": "https://www.openstreetmap.org/node/13788036936",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13788036937",
-          "name": "Boomtown Bar",
-          "category": "bar",
-          "lat": 32.7578083,
-          "lon": -97.0682473,
-          "sourceUrl": "https://www.openstreetmap.org/node/13788036937",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13788591009",
-          "name": "Dusty Dan's",
-          "category": "restaurant",
-          "lat": 32.7576232,
-          "lon": -97.0680831,
-          "sourceUrl": "https://www.openstreetmap.org/node/13788591009",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13788591010",
-          "name": "Miss Abby's",
-          "category": "restaurant",
-          "lat": 32.7575991,
-          "lon": -97.0679934,
-          "sourceUrl": "https://www.openstreetmap.org/node/13788591010",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13788591011",
-          "name": "Dry Hole Charlie's",
-          "category": "restaurant",
-          "lat": 32.7575084,
-          "lon": -97.067891,
-          "sourceUrl": "https://www.openstreetmap.org/node/13788591011",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "node/13983988897",
-          "name": "Breakfast Brothers",
-          "category": "restaurant",
-          "lat": 32.7374621,
-          "lon": -97.1031742,
-          "sourceUrl": "https://www.openstreetmap.org/node/13983988897",
-          "retrievedDate": "2026-11-09",
-          "address": "400 East Front Street"
-        },
-        {
-          "id": "node/13983988900",
-          "name": "Cane Rosso",
-          "category": "restaurant",
-          "lat": 32.7379425,
-          "lon": -97.1036079,
-          "sourceUrl": "https://www.openstreetmap.org/node/13983988900",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "way/97043616",
-          "name": "Sheraton Arlington Hotel",
-          "category": "hotel",
-          "lat": 32.756896,
-          "lon": -97.0818858,
-          "sourceUrl": "https://www.openstreetmap.org/way/97043616",
-          "retrievedDate": "2026-11-09",
-          "address": "1500 Convention Center Drive Arlington 76011"
-        },
-        {
-          "id": "way/97402356",
-          "name": "El Toro Sinaloense",
-          "category": "restaurant",
-          "lat": 32.7585605,
-          "lon": -97.0892371,
-          "sourceUrl": "https://www.openstreetmap.org/way/97402356",
-          "retrievedDate": "2026-11-09",
-          "address": "1520 Nolan Ryan Expressway 76011"
-        },
-        {
-          "id": "way/97574272",
-          "name": "Four Points by Sheraton Dallas Arlington Entertainment District",
-          "category": "hotel",
-          "lat": 32.7493104,
-          "lon": -97.0653419,
-          "sourceUrl": "https://www.openstreetmap.org/way/97574272",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/97632645",
-          "name": "On The Border",
-          "category": "restaurant",
-          "lat": 32.7587266,
-          "lon": -97.0765214,
-          "sourceUrl": "https://www.openstreetmap.org/way/97632645",
-          "retrievedDate": "2026-11-09",
-          "address": "2011 East Copeland Road Arlington 76011",
-          "cuisine": "tex-mex"
-        },
-        {
-          "id": "way/97632655",
-          "name": "VB Steakhouse",
-          "category": "restaurant",
-          "lat": 32.7591102,
-          "lon": -97.0768944,
-          "sourceUrl": "https://www.openstreetmap.org/way/97632655",
-          "retrievedDate": "2026-11-09",
-          "address": "2009 East Copeland Road Arlington 76011",
-          "cuisine": "steak_house"
-        },
-        {
-          "id": "way/97632674",
-          "name": "Howard Johnson",
-          "category": "hotel",
-          "lat": 32.7590551,
-          "lon": -97.0782314,
-          "sourceUrl": "https://www.openstreetmap.org/way/97632674",
-          "retrievedDate": "2026-11-09",
-          "address": "2001 East Copeland Road Arlington 76011"
-        },
-        {
-          "id": "way/104653986",
-          "name": "Red River Funnel Cakes",
-          "category": "restaurant",
-          "lat": 32.7578537,
-          "lon": -97.0705421,
-          "sourceUrl": "https://www.openstreetmap.org/way/104653986",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/105108547",
-          "name": "JB's Smokehouse Barbeque",
-          "category": "restaurant",
-          "lat": 32.7570502,
-          "lon": -97.071325,
-          "sourceUrl": "https://www.openstreetmap.org/way/105108547",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/105127547",
-          "name": "Peg Leg Pete's",
-          "category": "restaurant",
-          "lat": 32.7618223,
-          "lon": -97.0812376,
-          "sourceUrl": "https://www.openstreetmap.org/way/105127547",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "way/251872987",
-          "name": "Moni's Pasta & Pizza",
-          "category": "restaurant",
-          "lat": 32.7493074,
-          "lon": -97.1356481,
-          "sourceUrl": "https://www.openstreetmap.org/way/251872987",
-          "retrievedDate": "2026-11-09",
-          "address": "1730 West Randol Mill Road Arlington 76012",
-          "cuisine": "italian"
-        },
-        {
-          "id": "way/301620458",
-          "name": "Parkway Inn",
-          "category": "hotel",
-          "lat": 32.7245927,
-          "lon": -97.1153512,
-          "sourceUrl": "https://www.openstreetmap.org/way/301620458",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/309506738",
-          "name": "Annapuram",
-          "category": "restaurant",
-          "lat": 32.7248981,
-          "lon": -97.11422,
-          "sourceUrl": "https://www.openstreetmap.org/way/309506738",
-          "retrievedDate": "2026-11-09",
-          "address": "1201 South Cooper Street Arlington 76010",
-          "cuisine": "indian"
-        },
-        {
-          "id": "way/309646156",
-          "name": "Old School Pizza Tavern",
-          "category": "restaurant",
-          "lat": 32.7359152,
-          "lon": -97.1131854,
-          "sourceUrl": "https://www.openstreetmap.org/way/309646156",
-          "retrievedDate": "2026-11-09",
-          "address": "603 West Abram Street Arlington 76010",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "way/309646157",
-          "name": "Mama Deluca's",
-          "category": "restaurant",
-          "lat": 32.7359287,
-          "lon": -97.1110487,
-          "sourceUrl": "https://www.openstreetmap.org/way/309646157",
-          "retrievedDate": "2026-11-09",
-          "address": "407 West Abram Street Arlington 76010",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "way/400677165",
-          "name": "Mariano's Hacienda",
-          "category": "restaurant",
-          "lat": 32.7545997,
-          "lon": -97.0615533,
-          "sourceUrl": "https://www.openstreetmap.org/way/400677165",
-          "retrievedDate": "2026-11-09",
-          "address": "2614 Majesty Drive Arlington 76011",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "way/409623815",
-          "name": "Los Dulces Sweet Shop",
-          "category": "restaurant",
-          "lat": 32.7557306,
-          "lon": -97.0708948,
-          "sourceUrl": "https://www.openstreetmap.org/way/409623815",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/409623816",
-          "name": "Tostitos Cantina",
-          "category": "restaurant",
-          "lat": 32.7556188,
-          "lon": -97.0708916,
-          "sourceUrl": "https://www.openstreetmap.org/way/409623816",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/411377153",
-          "name": "Texas Corn Dogs & Fries",
-          "category": "restaurant",
-          "lat": 32.756003,
-          "lon": -97.0716203,
-          "sourceUrl": "https://www.openstreetmap.org/way/411377153",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/496243454",
-          "name": "Holiday Inn",
-          "category": "hotel",
-          "lat": 32.7613501,
-          "lon": -97.0921556,
-          "sourceUrl": "https://www.openstreetmap.org/way/496243454",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/603574475",
-          "name": "La Quinta Inn",
-          "category": "hotel",
-          "lat": 32.7547163,
-          "lon": -97.0658779,
-          "sourceUrl": "https://www.openstreetmap.org/way/603574475",
-          "retrievedDate": "2026-11-09",
-          "address": "825 North Watson Road Arlington 76011"
-        },
-        {
-          "id": "way/603601416",
-          "name": "Baymont Arlington at Six Flags Dr",
-          "category": "hotel",
-          "lat": 32.7539097,
-          "lon": -97.0652298,
-          "sourceUrl": "https://www.openstreetmap.org/way/603601416",
-          "retrievedDate": "2026-11-09",
-          "address": "2401 Diplomacy Drive Arlington 76011"
-        },
-        {
-          "id": "way/620709654",
-          "name": "Olive Garden",
-          "category": "restaurant",
-          "lat": 32.7587478,
-          "lon": -97.0999387,
-          "sourceUrl": "https://www.openstreetmap.org/way/620709654",
-          "retrievedDate": "2026-11-09",
-          "address": "210 Lincoln Square Arlington 76011",
-          "cuisine": "italian"
-        },
-        {
-          "id": "way/640671350",
-          "name": "Cracker Barrel",
-          "category": "restaurant",
-          "lat": 32.7701842,
-          "lon": -97.0639453,
-          "sourceUrl": "https://www.openstreetmap.org/way/640671350",
-          "retrievedDate": "2026-11-09",
-          "address": "1251 North Watson Road Arlington 76006",
-          "cuisine": "american"
-        },
-        {
-          "id": "way/640671380",
-          "name": "Extended Stay America",
-          "category": "hotel",
-          "lat": 32.7695845,
-          "lon": -97.0642125,
-          "sourceUrl": "https://www.openstreetmap.org/way/640671380",
-          "retrievedDate": "2026-11-09",
-          "address": "1221 North Watson Road Arlington 76006"
-        },
-        {
-          "id": "way/640671761",
-          "name": "DoubleTree by Hilton Arlington DFW South",
-          "category": "hotel",
-          "lat": 32.7730557,
-          "lon": -97.0636792,
-          "sourceUrl": "https://www.openstreetmap.org/way/640671761",
-          "retrievedDate": "2026-11-09",
-          "address": "1507 North Watson Road Arlington 76006"
-        },
-        {
-          "id": "way/640978735",
-          "name": "Gyros House",
-          "category": "restaurant",
-          "lat": 32.738879,
-          "lon": -97.115379,
-          "sourceUrl": "https://www.openstreetmap.org/way/640978735",
-          "retrievedDate": "2026-11-09",
-          "address": "720 West Division Street Arlington 76012",
-          "cuisine": "greek"
-        },
-        {
-          "id": "way/640979350",
-          "name": "Taste Project",
-          "category": "restaurant",
-          "lat": 32.7380295,
-          "lon": -97.1149495,
-          "sourceUrl": "https://www.openstreetmap.org/way/640979350",
-          "retrievedDate": "2026-11-09",
-          "address": "200 North Cooper Street Arlington 76011",
-          "cuisine": "regional"
-        },
-        {
-          "id": "way/641341480",
-          "name": "Tom's Burgers & Grill",
-          "category": "restaurant",
-          "lat": 32.7588975,
-          "lon": -97.1151454,
-          "sourceUrl": "https://www.openstreetmap.org/way/641341480",
-          "retrievedDate": "2026-11-09",
-          "address": "1530 North Cooper Street 76011",
-          "cuisine": "american;diner"
-        },
-        {
-          "id": "way/641374921",
-          "name": "Free Play Arcade - Arlington",
-          "category": "restaurant",
-          "lat": 32.7343862,
-          "lon": -97.1031959,
-          "sourceUrl": "https://www.openstreetmap.org/way/641374921",
-          "retrievedDate": "2026-11-09",
-          "address": "400 East South Street Arlington 76010"
-        },
-        {
-          "id": "way/641374922",
-          "name": "White Rhino Coffee",
-          "category": "cafe",
-          "lat": 32.7339882,
-          "lon": -97.1031332,
-          "sourceUrl": "https://www.openstreetmap.org/way/641374922",
-          "retrievedDate": "2026-11-09",
-          "address": "401 East Border Street Arlington 76010",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "way/641375002",
-          "name": "Tin Cup",
-          "category": "cafe",
-          "lat": 32.7360736,
-          "lon": -97.1200393,
-          "sourceUrl": "https://www.openstreetmap.org/way/641375002",
-          "retrievedDate": "2026-11-09",
-          "address": "1025 West Abram Street 76013",
-          "cuisine": "deli"
-        },
-        {
-          "id": "way/641970458",
-          "name": "Motel 6 Arlington TX Entertainment District",
-          "category": "hotel",
-          "lat": 32.7487881,
-          "lon": -97.0979409,
-          "sourceUrl": "https://www.openstreetmap.org/way/641970458",
-          "retrievedDate": "2026-11-09",
-          "address": "North Collins Street 76011"
-        },
-        {
-          "id": "way/641970516",
-          "name": "Comfort Suites Arlington - Entertainment District",
-          "category": "hotel",
-          "lat": 32.7587035,
-          "lon": -97.1100373,
-          "sourceUrl": "https://www.openstreetmap.org/way/641970516",
-          "retrievedDate": "2026-11-09",
-          "address": "411 West Road to Six Flags Street Arlington 76011"
-        },
-        {
-          "id": "way/641980401",
-          "name": "Bodacious Bar-B-Q",
-          "category": "restaurant",
-          "lat": 32.7400075,
-          "lon": -97.0917523,
-          "sourceUrl": "https://www.openstreetmap.org/way/641980401",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "barbecue"
-        },
-        {
-          "id": "way/641987366",
-          "name": "Denny's",
-          "category": "restaurant",
-          "lat": 32.7567664,
-          "lon": -97.0644707,
-          "sourceUrl": "https://www.openstreetmap.org/way/641987366",
-          "retrievedDate": "2026-11-09",
-          "address": "839 North Watson Road Arlington 76011",
-          "cuisine": "american"
-        },
-        {
-          "id": "way/641987368",
-          "name": "Bombshells",
-          "category": "restaurant",
-          "lat": 32.7529889,
-          "lon": -97.0644069,
-          "sourceUrl": "https://www.openstreetmap.org/way/641987368",
-          "retrievedDate": "2026-11-09",
-          "address": "701 North Watson Road Arlington 76011",
-          "cuisine": "american"
-        },
-        {
-          "id": "way/641987369",
-          "name": "Homewood Suites",
-          "category": "hotel",
-          "lat": 32.7529376,
-          "lon": -97.0652712,
-          "sourceUrl": "https://www.openstreetmap.org/way/641987369",
-          "retrievedDate": "2026-11-09",
-          "address": "2401 East Road to Six Flags Street Arlington 76011"
-        },
-        {
-          "id": "way/641987371",
-          "name": "Sleep Inn Arlington Near Six Flags",
-          "category": "hotel",
-          "lat": 32.7537116,
-          "lon": -97.0661767,
-          "sourceUrl": "https://www.openstreetmap.org/way/641987371",
-          "retrievedDate": "2026-11-09",
-          "address": "750 Six Flags Drive Arlington 76011"
-        },
-        {
-          "id": "way/641987372",
-          "name": "Red Crab",
-          "category": "restaurant",
-          "lat": 32.7539675,
-          "lon": -97.0642819,
-          "sourceUrl": "https://www.openstreetmap.org/way/641987372",
-          "retrievedDate": "2026-11-09",
-          "address": "721 North Watson Road Arlington 76011",
-          "cuisine": "seafood"
-        },
-        {
-          "id": "way/642041013",
-          "name": "SpringHill Suites Dallas Arlington North",
-          "category": "hotel",
-          "lat": 32.7632471,
-          "lon": -97.0787222,
-          "sourceUrl": "https://www.openstreetmap.org/way/642041013",
-          "retrievedDate": "2026-11-09",
-          "address": "1975 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/642270563",
-          "name": "Hyatt Place Dallas/North Arlington/Grand Prairie",
-          "category": "hotel",
-          "lat": 32.7720104,
-          "lon": -97.060531,
-          "sourceUrl": "https://www.openstreetmap.org/way/642270563",
-          "retrievedDate": "2026-11-09",
-          "address": "1542 North State Highway 360 Grand Prairie 75050"
-        },
-        {
-          "id": "way/642723915",
-          "name": "The Arlin, Arlington, a Tribute Portfolio Hotel",
-          "category": "hotel",
-          "lat": 32.7606301,
-          "lon": -97.0564383,
-          "sourceUrl": "https://www.openstreetmap.org/way/642723915",
-          "retrievedDate": "2026-11-09",
-          "address": "2700 E. Lamar Boulevard Arlington 76011"
-        },
-        {
-          "id": "way/642745098",
-          "name": "Lux Hotel & Spa",
-          "category": "hotel",
-          "lat": 32.7402557,
-          "lon": -97.0600179,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745098",
-          "retrievedDate": "2026-11-09",
-          "address": "117 South Watson Road Arlington 76010"
-        },
-        {
-          "id": "way/642745610",
-          "name": "The Moon Saloon",
-          "category": "bar",
-          "lat": 32.7410042,
-          "lon": -97.0463211,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745610",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642745612",
-          "name": "Dirty Mule Bar",
-          "category": "bar",
-          "lat": 32.7413081,
-          "lon": -97.0463571,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745612",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642745613",
-          "name": "Diamond Jim's",
-          "category": "bar",
-          "lat": 32.7406355,
-          "lon": -97.0464861,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745613",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642745614",
-          "name": "America's Sports Bar",
-          "category": "bar",
-          "lat": 32.7402626,
-          "lon": -97.0464099,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745614",
-          "retrievedDate": "2026-11-09",
-          "address": "303 North Great Southwest Parkway Arlington 76011"
-        },
-        {
-          "id": "way/642745665",
-          "name": "Days Inn",
-          "category": "hotel",
-          "lat": 32.7479116,
-          "lon": -97.0612394,
-          "sourceUrl": "https://www.openstreetmap.org/way/642745665",
-          "retrievedDate": "2026-11-09",
-          "address": "2626 East Randol Mill Road Arlington 76011"
-        },
-        {
-          "id": "way/642766248",
-          "name": "R Nite Star Inn & Suites",
-          "category": "hotel",
-          "lat": 32.765132,
-          "lon": -97.0641114,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766248",
-          "retrievedDate": "2026-11-09",
-          "address": "1175 North Watson Road Arlington 76011"
-        },
-        {
-          "id": "way/642766251",
-          "name": "Holiday Inn Express & Suites Arlington North Stadium Area,",
-          "category": "hotel",
-          "lat": 32.7632976,
-          "lon": -97.0658424,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766251",
-          "retrievedDate": "2026-11-09",
-          "address": "1024 Brookhollow Plaza Drive"
-        },
-        {
-          "id": "way/642766257",
-          "name": "Hilton Arlington",
-          "category": "hotel",
-          "lat": 32.7624721,
-          "lon": -97.0672915,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766257",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642766263",
-          "name": "Residence Inn Arlington",
-          "category": "hotel",
-          "lat": 32.7639309,
-          "lon": -97.0659741,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766263",
-          "retrievedDate": "2026-11-09",
-          "address": "1050 Brookhollow Plaza Drive Arlington 76006"
-        },
-        {
-          "id": "way/642766266",
-          "name": "Boston's Pizza",
-          "category": "restaurant",
-          "lat": 32.7624425,
-          "lon": -97.0658964,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766266",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642766270",
-          "name": "Aloft Dallas Arlington Entertainment District",
-          "category": "hotel",
-          "lat": 32.7613675,
-          "lon": -97.0747131,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766270",
-          "retrievedDate": "2026-11-09",
-          "address": "2140 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/642766273",
-          "name": "Hampton Inn & Suites",
-          "category": "hotel",
-          "lat": 32.7628852,
-          "lon": -97.0726957,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766273",
-          "retrievedDate": "2026-11-09",
-          "address": "2200 Brookhollow Plaza Drive Arlington 76006"
-        },
-        {
-          "id": "way/642766288",
-          "name": "Candlewood Suites",
-          "category": "hotel",
-          "lat": 32.763902,
-          "lon": -97.0707182,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766288",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/642766342",
-          "name": "Hilton Garden Inn Dallas/Arlington",
-          "category": "hotel",
-          "lat": 32.7606821,
-          "lon": -97.071642,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766342",
-          "retrievedDate": "2026-11-09",
-          "address": "2190 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/642766344",
-          "name": "Saltgrass Steak House",
-          "category": "restaurant",
-          "lat": 32.7608275,
-          "lon": -97.0707496,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766344",
-          "retrievedDate": "2026-11-09",
-          "address": "2200 East Lamar Boulevard Arlington 76006",
-          "cuisine": "steak_house"
-        },
-        {
-          "id": "way/642766350",
-          "name": "Take a Bao",
-          "category": "restaurant",
-          "lat": 32.760779,
-          "lon": -97.0682645,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766350",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "asian;chinese;japanese;vietnamese"
-        },
-        {
-          "id": "way/642766351",
-          "name": "Extended Stay America",
-          "category": "hotel",
-          "lat": 32.7608167,
-          "lon": -97.0673345,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766351",
-          "retrievedDate": "2026-11-09",
-          "address": "2420 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/642766352",
-          "name": "Fairfield Inn & Suites Arlington Near Six Flags",
-          "category": "hotel",
-          "lat": 32.7610017,
-          "lon": -97.0665489,
-          "sourceUrl": "https://www.openstreetmap.org/way/642766352",
-          "retrievedDate": "2026-11-09",
-          "address": "2500 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/646480715",
-          "name": "InTown Suites Extended Stay Arlington TX - Six Flags",
-          "category": "hotel",
-          "lat": 32.7707733,
-          "lon": -97.0957927,
-          "sourceUrl": "https://www.openstreetmap.org/way/646480715",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/646480727",
-          "name": "la Madeline",
-          "category": "restaurant",
-          "lat": 32.7675097,
-          "lon": -97.0967002,
-          "sourceUrl": "https://www.openstreetmap.org/way/646480727",
-          "retrievedDate": "2026-11-09",
-          "address": "2101 North Collins Street Arlington 76011",
-          "cuisine": "french"
-        },
-        {
-          "id": "way/649208557",
-          "name": "Starbucks",
-          "category": "cafe",
-          "lat": 32.722125,
-          "lon": -97.1152647,
-          "sourceUrl": "https://www.openstreetmap.org/way/649208557",
-          "retrievedDate": "2026-11-09",
-          "address": "1390 Cooper Street Arlington 76013",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "way/654520885",
-          "name": "OH My BBQ",
-          "category": "restaurant",
-          "lat": 32.7066039,
-          "lon": -97.0972458,
-          "sourceUrl": "https://www.openstreetmap.org/way/654520885",
-          "retrievedDate": "2026-11-09",
-          "address": "901 East Arkansas Lane Arlington 76010",
-          "cuisine": "american"
-        },
-        {
-          "id": "way/737698385",
-          "name": "IHOP",
-          "category": "restaurant",
-          "lat": 32.7605911,
-          "lon": -97.0919042,
-          "sourceUrl": "https://www.openstreetmap.org/way/737698385",
-          "retrievedDate": "2026-11-09",
-          "cuisine": "breakfast;pancake"
-        },
-        {
-          "id": "way/935842204",
-          "name": "TownePlace Suites Dallas Arlington North",
-          "category": "hotel",
-          "lat": 32.7638886,
-          "lon": -97.0832183,
-          "sourceUrl": "https://www.openstreetmap.org/way/935842204",
-          "retrievedDate": "2026-11-09",
-          "address": "1709 East Lamar Boulevard Arlington 76006"
-        },
-        {
-          "id": "way/1000650981",
-          "name": "Taco Casa",
-          "category": "restaurant",
-          "lat": 32.7178049,
-          "lon": -97.1152103,
-          "sourceUrl": "https://www.openstreetmap.org/way/1000650981",
-          "retrievedDate": "2026-11-09",
-          "address": "1704 South Cooper Street Arlington 76013",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "way/1033962252",
-          "name": "Starbucks",
-          "category": "cafe",
-          "lat": 32.7333564,
-          "lon": -97.1092441,
-          "sourceUrl": "https://www.openstreetmap.org/way/1033962252",
-          "retrievedDate": "2026-11-09",
-          "address": "400 Spaniolo Drive Arlington 76010",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "way/1047775895",
-          "name": "PastaMasta",
-          "category": "restaurant",
-          "lat": 32.769006,
-          "lon": -97.0966997,
-          "sourceUrl": "https://www.openstreetmap.org/way/1047775895",
-          "retrievedDate": "2026-11-09",
-          "address": "2151 North Collins Street Arlington 76011",
-          "cuisine": "pasta"
-        },
-        {
-          "id": "way/1049173474",
-          "name": "Starbucks",
-          "category": "cafe",
-          "lat": 32.7674025,
-          "lon": -97.0977226,
-          "sourceUrl": "https://www.openstreetmap.org/way/1049173474",
-          "retrievedDate": "2026-11-09",
-          "address": "2100 North Collins Street Arlington 76011",
-          "cuisine": "coffee_shop"
-        },
-        {
-          "id": "way/1092447816",
-          "name": "Mellow Mushroom",
-          "category": "restaurant",
-          "lat": 32.7380324,
-          "lon": -97.107286,
-          "sourceUrl": "https://www.openstreetmap.org/way/1092447816",
-          "retrievedDate": "2026-11-09",
-          "address": "200 North Center Street Arlington 76011",
-          "cuisine": "pizza"
-        },
-        {
-          "id": "way/1256980744",
-          "name": "Tacos \"La Banqueta\" Puro \"DF\"",
-          "category": "restaurant",
-          "lat": 32.7084596,
-          "lon": -97.0944785,
-          "sourceUrl": "https://www.openstreetmap.org/way/1256980744",
-          "retrievedDate": "2026-11-09",
-          "address": "1021 Pioneer Parkway 76010",
-          "cuisine": "mexican"
-        },
-        {
-          "id": "way/1303806681",
-          "name": "Loews Arlington Hotel and Convention Center",
-          "category": "hotel",
-          "lat": 32.750846,
-          "lon": -97.0851937,
-          "sourceUrl": "https://www.openstreetmap.org/way/1303806681",
-          "retrievedDate": "2026-11-09",
-          "address": "888 Nolan Ryan Expressway Arlington 76011"
-        },
-        {
-          "id": "way/1414342995",
-          "name": "All American Cafe",
-          "category": "restaurant",
-          "lat": 32.756821,
-          "lon": -97.0694915,
-          "sourceUrl": "https://www.openstreetmap.org/way/1414342995",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1502065183",
-          "name": "Johnny Rockets",
-          "category": "restaurant",
-          "lat": 32.7572641,
-          "lon": -97.0667852,
-          "sourceUrl": "https://www.openstreetmap.org/way/1502065183",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507504106",
-          "name": "Star Mall Dippin' Dots",
-          "category": "restaurant",
-          "lat": 32.7558785,
-          "lon": -97.0701063,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507504106",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507507070",
-          "name": "Flags Funnel Cakes",
-          "category": "restaurant",
-          "lat": 32.7561126,
-          "lon": -97.0699903,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507507070",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507525078",
-          "name": "USA Dippin' Dots",
-          "category": "restaurant",
-          "lat": 32.7565568,
-          "lon": -97.0693223,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507525078",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507525081",
-          "name": "ICEE Frozen Lemonade",
-          "category": "restaurant",
-          "lat": 32.756674,
-          "lon": -97.0698253,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507525081",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507535366",
-          "name": "Primo's Pizzeria",
-          "category": "restaurant",
-          "lat": 32.7564535,
-          "lon": -97.0708956,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507535366",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507535368",
-          "name": "Smith Street Ice Cream Parlor",
-          "category": "restaurant",
-          "lat": 32.7564611,
-          "lon": -97.0711313,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507535368",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507535374",
-          "name": "JB's Express",
-          "category": "restaurant",
-          "lat": 32.7569211,
-          "lon": -97.0711291,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507535374",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507567190",
-          "name": "Dippin' Dots Sundae Shop",
-          "category": "restaurant",
-          "lat": 32.7561905,
-          "lon": -97.0720888,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507567190",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507580562",
-          "name": "The Original Pineapple Man",
-          "category": "restaurant",
-          "lat": 32.7579559,
-          "lon": -97.0714335,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507580562",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507878277",
-          "name": "Newman's Cafe",
-          "category": "restaurant",
-          "lat": 32.7578152,
-          "lon": -97.0693149,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507878277",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1507992759",
-          "name": "Boomtown Dippin' Dots",
-          "category": "restaurant",
-          "lat": 32.7573193,
-          "lon": -97.0677109,
-          "sourceUrl": "https://www.openstreetmap.org/way/1507992759",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1508004683",
-          "name": "Auntie Anne's",
-          "category": "restaurant",
-          "lat": 32.756871,
-          "lon": -97.0690321,
-          "sourceUrl": "https://www.openstreetmap.org/way/1508004683",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1509124486",
-          "name": "Cheetos Popcorn Mix",
-          "category": "restaurant",
-          "lat": 32.7571686,
-          "lon": -97.0673402,
-          "sourceUrl": "https://www.openstreetmap.org/way/1509124486",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "way/1509124487",
-          "name": "Taiyaki Soft Serve",
-          "category": "restaurant",
-          "lat": 32.7571929,
-          "lon": -97.0672036,
-          "sourceUrl": "https://www.openstreetmap.org/way/1509124487",
-          "retrievedDate": "2026-11-09"
-        },
-        {
-          "id": "relation/8859636",
-          "name": "Studio 6",
-          "category": "hotel",
-          "lat": 32.7748431,
-          "lon": -97.0634323,
-          "sourceUrl": "https://www.openstreetmap.org/relation/8859636",
-          "retrievedDate": "2026-11-09",
-          "address": "1607 North Watson Road Arlington 76006"
-        },
-        {
-          "id": "relation/8900375",
-          "name": "Courtyard",
-          "category": "hotel",
-          "lat": 32.75757,
-          "lon": -97.0895279,
-          "sourceUrl": "https://www.openstreetmap.org/relation/8900375",
-          "retrievedDate": "2026-11-09",
-          "address": "1500 Nolan Ryan Expressway Arlington 76011"
-        },
-        {
-          "id": "relation/8906916",
-          "name": "Hawthorn Suites",
-          "category": "hotel",
-          "lat": 32.7640266,
-          "lon": -97.067241,
-          "sourceUrl": "https://www.openstreetmap.org/relation/8906916",
-          "retrievedDate": "2026-11-09"
-        }
-      ],
-      "transport": {
-        "address": "One AT&T Way, Arlington, TX 76011",
-        "travelUrl": "https://attstadium.com/maps/game-day-map/",
-        "sourceUrl": "https://attstadium.com/maps/game-day-map/",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "arrowhead": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "1 Arrowhead Drive, Kansas City, Missouri 64129",
-        "travelUrl": "https://www.gehafieldatarrowhead.com/plan-your-visit/parking-transportation/game-plan",
-        "sourceUrl": "https://www.gehafieldatarrowhead.com/plan-your-visit/parking-transportation/game-plan",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "mercedes": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "1 AMB Drive, Atlanta, GA 30313",
-        "travelUrl": "https://www.mercedesbenzstadium.com/visit/parking-and-transportation",
-        "sourceUrl": "https://www.mercedesbenzstadium.com/visit/a-to-z-guide",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "nrg": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "8825 Kirby Drive, Houston, TX 77054",
-        "travelUrl": "https://www.reliantpark.com/directions-parking/",
-        "sourceUrl": "https://www.reliantpark.com/directions-parking/",
-        "verifiedDate": "2026-11-09",
-        "gaps": [],
-        "notes": "nrgpark.com navigation links to reliantpark.com; published stadium address is 8825 Kirby Drive. Adjacent Get Directions link inconsistently targets 8600 Kirby Drive; use venue page, not that map link."
-      }
-    },
-    "hardrock": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "347 Don Shula Dr, Miami Gardens, FL 33056",
-        "travelUrl": "https://www.hardrockstadium.com/parking/",
-        "sourceUrl": "https://www.hardrockstadium.com/parking/",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "gillette": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "One Patriot Place, Foxborough, MA 02035",
-        "travelUrl": "https://www.gillettestadium.com/directions/",
-        "sourceUrl": "https://gillettestadium.com",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "lincoln": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "One Lincoln Financial Field Way, Philadelphia PA 19147",
-        "travelUrl": "https://www.lincolnfinancialfield.com/maps-and-parking/",
-        "sourceUrl": "https://www.lincolnfinancialfield.com/a-z-stadium-information/",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "levis": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "4900 Marie P. DeBartolo Way, Santa Clara, CA 95054",
-        "travelUrl": "https://levisstadium.com/plan-your-visit/directions/",
-        "sourceUrl": "https://levisstadium.com/contact-us/",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "lumen": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "800 Occidental Ave. S., Seattle, WA 98134",
-        "travelUrl": "https://lumenfield.com/plan-your-visit/directions",
-        "sourceUrl": "https://lumenfield.com/plan-your-visit/directions",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "bmo": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "170 Princes’ Boulevard, Toronto, ON M6K 3C3",
-        "travelUrl": "https://www.bmofield.com/plan-your-visit/direction-parking",
-        "sourceUrl": "https://bmofield.com",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "bcplace": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "777 Pacific Boulevard, Vancouver, BC V6B 4Y8, Canada",
-        "travelUrl": "https://www.bcplace.com/getting-here/",
-        "sourceUrl": "https://www.bcplace.com/getting-here/",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "azteca": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "Calz. de Tlalpan 3465, Sta. Úrsula Coapa, Coyoacán, 04650 Ciudad de México, CDMX, Mexico",
-        "travelUrl": "https://www.estadiobanorte.com.mx/estadio/estadio-banorte",
-        "sourceUrl": "https://www.estadiobanorte.com.mx/estadio/estadio-banorte",
-        "verifiedDate": "2026-11-09",
-        "gaps": [],
-        "officialName": "Estadio Banorte",
-        "notes": "estadioazteca.com.mx resolves to current Estadio Banorte content; stadium page includes Cómo llegar."
-      }
-    },
-    "akron": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": "Av. Circuito JVC 2800, El Bajio, 45019 Zapopan, Jalisco, México",
-        "travelUrl": "https://estadioakron.mx/Como-llegar-al-estadio",
-        "sourceUrl": "https://estadioakron.mx/Contactanos",
-        "verifiedDate": "2026-11-09",
-        "gaps": []
-      }
-    },
-    "bbva": {
-      "status": "retrieval-blocked",
-      "retrievalBlocker": "Overpass primary returned HTTP 502 (capacity); public mirrors returned HTTP 429 or timed out. No records retrieved.",
-      "places": [],
-      "transport": {
-        "address": null,
-        "travelUrl": null,
-        "sourceUrl": "https://estadio-bbva.mx/planea-tu-visita",
-        "verifiedDate": "2026-11-09",
-        "gaps": [
-          "Street number and postal code not published on verified visitor page. estadiobbva.mx fetch failed; alternative branded venue site estadio-bbva.mx fetched successfully, but no independent inbound official-domain cross-link was established.",
-          "Address withheld pending independent confirmation of alternative domain provenance; candidate page states Av. Pablo Livas, colonia La Pastora, Guadalupe, NL."
-        ],
-        "notes": "Branded site declares Sitio oficial del estadio BBVA and uses id.rayados.com login; domain provenance not independently confirmed.",
-        "candidateTravelUrl": "https://estadio-bbva.mx/planea-tu-visita"
-      }
-    }
+ "source": "OpenStreetMap contributors",
+ "license": "ODbL-1.0",
+ "licenseUrl": "https://opendatacommons.org/licenses/odbl/1-0/",
+ "attributionUrl": "https://www.openstreetmap.org/copyright",
+ "retrievedDate": "2026-11-09",
+ "radiusMiles": 3,
+ "stadiums": {
+  "sofi": {
+   "status": "retrieved",
+   "transport": {
+    "address": "1001 S. Stadium Drive, Inglewood, CA 90301",
+    "travelUrl": "https://www.sofistadium.com/plan-your-visit/parking-and-transportation",
+    "sourceUrl": "https://www.sofistadium.com/plan-your-visit/parking-and-transportation",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 100
+  },
+  "metlife": {
+   "status": "retrieved",
+   "transport": {
+    "address": "One MetLife Stadium Drive, East Rutherford, NJ 07073",
+    "travelUrl": "https://www.metlifestadium.com/plan-your-visit/public-transportation",
+    "sourceUrl": "https://metlifestadium.com",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 146
+  },
+  "att": {
+   "status": "retrieved",
+   "transport": {
+    "address": "One AT&T Way, Arlington, TX 76011",
+    "travelUrl": "https://attstadium.com/maps/game-day-map/",
+    "sourceUrl": "https://attstadium.com/maps/game-day-map/",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 165
+  },
+  "arrowhead": {
+   "status": "retrieved",
+   "transport": {
+    "address": "1 Arrowhead Drive, Kansas City, Missouri 64129",
+    "travelUrl": "https://www.gehafieldatarrowhead.com/plan-your-visit/parking-transportation/game-plan",
+    "sourceUrl": "https://www.gehafieldatarrowhead.com/plan-your-visit/parking-transportation/game-plan",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 23
+  },
+  "mercedes": {
+   "status": "retrieved",
+   "transport": {
+    "address": "1 AMB Drive, Atlanta, GA 30313",
+    "travelUrl": "https://www.mercedesbenzstadium.com/visit/parking-and-transportation",
+    "sourceUrl": "https://www.mercedesbenzstadium.com/visit/a-to-z-guide",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 741
+  },
+  "nrg": {
+   "status": "retrieved",
+   "transport": {
+    "address": "8825 Kirby Drive, Houston, TX 77054",
+    "travelUrl": "https://www.reliantpark.com/directions-parking/",
+    "sourceUrl": "https://www.reliantpark.com/directions-parking/",
+    "verifiedDate": "2026-11-09",
+    "gaps": [],
+    "notes": "nrgpark.com navigation links to reliantpark.com; published stadium address is 8825 Kirby Drive. Adjacent Get Directions link inconsistently targets 8600 Kirby Drive; use venue page, not that map link."
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 143
+  },
+  "hardrock": {
+   "status": "retrieved",
+   "transport": {
+    "address": "347 Don Shula Dr, Miami Gardens, FL 33056",
+    "travelUrl": "https://www.hardrockstadium.com/parking/",
+    "sourceUrl": "https://www.hardrockstadium.com/parking/",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 23
+  },
+  "gillette": {
+   "status": "retrieved",
+   "transport": {
+    "address": "One Patriot Place, Foxborough, MA 02035",
+    "travelUrl": "https://www.gillettestadium.com/directions/",
+    "sourceUrl": "https://gillettestadium.com",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 27
+  },
+  "lincoln": {
+   "status": "retrieved",
+   "transport": {
+    "address": "One Lincoln Financial Field Way, Philadelphia PA 19147",
+    "travelUrl": "https://www.lincolnfinancialfield.com/maps-and-parking/",
+    "sourceUrl": "https://www.lincolnfinancialfield.com/a-z-stadium-information/",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 254
+  },
+  "levis": {
+   "status": "retrieved",
+   "transport": {
+    "address": "4900 Marie P. DeBartolo Way, Santa Clara, CA 95054",
+    "travelUrl": "https://levisstadium.com/plan-your-visit/directions/",
+    "sourceUrl": "https://levisstadium.com/contact-us/",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 219
+  },
+  "lumen": {
+   "status": "retrieved",
+   "transport": {
+    "address": "800 Occidental Ave. S., Seattle, WA 98134",
+    "travelUrl": "https://lumenfield.com/plan-your-visit/directions",
+    "sourceUrl": "https://lumenfield.com/plan-your-visit/directions",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 1419
+  },
+  "bmo": {
+   "status": "retrieved",
+   "transport": {
+    "address": "170 Princes’ Boulevard, Toronto, ON M6K 3C3",
+    "travelUrl": "https://www.bmofield.com/plan-your-visit/direction-parking",
+    "sourceUrl": "https://bmofield.com",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 2433
+  },
+  "bcplace": {
+   "status": "retrieved",
+   "transport": {
+    "address": "777 Pacific Boulevard, Vancouver, BC V6B 4Y8, Canada",
+    "travelUrl": "https://www.bcplace.com/getting-here/",
+    "sourceUrl": "https://www.bcplace.com/getting-here/",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 1945
+  },
+  "azteca": {
+   "status": "retrieved",
+   "transport": {
+    "address": "Calz. de Tlalpan 3465, Sta. Úrsula Coapa, Coyoacán, 04650 Ciudad de México, CDMX, Mexico",
+    "travelUrl": "https://www.estadiobanorte.com.mx/estadio/estadio-banorte",
+    "sourceUrl": "https://www.estadiobanorte.com.mx/estadio/estadio-banorte",
+    "verifiedDate": "2026-11-09",
+    "gaps": [],
+    "officialName": "Estadio Banorte",
+    "notes": "estadioazteca.com.mx resolves to current Estadio Banorte content; stadium page includes Cómo llegar."
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 391
+  },
+  "akron": {
+   "status": "retrieved",
+   "transport": {
+    "address": "Av. Circuito JVC 2800, El Bajio, 45019 Zapopan, Jalisco, México",
+    "travelUrl": "https://estadioakron.mx/Como-llegar-al-estadio",
+    "sourceUrl": "https://estadioakron.mx/Contactanos",
+    "verifiedDate": "2026-11-09",
+    "gaps": []
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 144
+  },
+  "bbva": {
+   "status": "retrieved",
+   "transport": {
+    "address": null,
+    "travelUrl": null,
+    "sourceUrl": "https://estadio-bbva.mx/planea-tu-visita",
+    "verifiedDate": "2026-11-09",
+    "gaps": [
+     "Street number and postal code not published on verified visitor page. estadiobbva.mx fetch failed; alternative branded venue site estadio-bbva.mx fetched successfully, but no independent inbound official-domain cross-link was established.",
+     "Address withheld pending independent confirmation of alternative domain provenance; candidate page states Av. Pablo Livas, colonia La Pastora, Guadalupe, NL."
+    ],
+    "notes": "Branded site declares Sitio oficial del estadio BBVA and uses id.rayados.com login; domain provenance not independently confirmed.",
+    "candidateTravelUrl": "https://estadio-bbva.mx/planea-tu-visita"
+   },
+   "retrievedDate": "2026-11-09",
+   "placeCount": 120
   }
+ }
 }

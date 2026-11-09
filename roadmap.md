@@ -15,5 +15,5 @@
 - [x] Bundle genuine places and 15 verified official stadium address/travel records by stadium ID.
 - [x] Restore local category/radius filters, sorted distances, cards and matching markers.
 - [x] Verify AT&T and all stadium tabs, desktop/mobile layout, seven tests and automated build.
-- [ ] Remaining 15 stadium place snapshots: blocked by Overpass HTTP 502 capacity, HTTP 429 and mirror timeouts.
+- [x] Retrieve place snapshots for all 16 stadiums; lazy-load per stadium; distance labels and reset filter.
 - [ ] BBVA address/travel: blocked by unverified alternative-domain provenance and original-domain fetch failure.

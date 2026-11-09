@@ -13,7 +13,7 @@ import type { Poi } from "@/lib/overpass";
 import { fanzones, type FanZone } from "@/data/fanzones";
 import DirectionsPanel from "@/components/DirectionsPanel";
 import SavedPlacesTab from "@/components/SavedPlacesTab";
-import { listedPlaces, type PlaceCategory } from "@/lib/saved-places";
+import { listedPlaces, loadStadiumPlaces, placesOfKind, type PlaceCategory, type RawPlace } from "@/lib/saved-places";
 
 type Tab = "overview" | "transport" | "hotels" | "restaurants" | "fanzones";
 
@@ -31,9 +31,25 @@ export default function StadiumDetail({
   const [tab, setTab] = useState<Tab>("overview");
   const [radius, setRadius] = useState(1.5);
   const [category, setCategory] = useState<PlaceCategory>("all");
-  const places = useMemo(() => stadium && (tab === "hotels" || tab === "restaurants")
-    ? listedPlaces(stadium, tab === "hotels" ? "hotels" : "eatdrink", radius, category)
-    : [], [stadium, tab, radius, category]);
+  // Records are tagged with their stadium ID so a previous stadium's results are never shown.
+  const [loaded, setLoaded] = useState<{ id: string; places: RawPlace[] | null } | null>(null);
+  useEffect(() => {
+    if (!stadium) return;
+    let current = true;
+    const id = stadium.id;
+    loadStadiumPlaces(id)
+      .then((records) => { if (current) setLoaded({ id, places: records }); })
+      .catch(() => { if (current) setLoaded({ id, places: null }); });
+    return () => { current = false; };
+  }, [stadium?.id]);
+  const placeKind = tab === "hotels" ? "hotels" : "eatdrink";
+  const stadiumRecords = loaded && stadium && loaded.id === stadium.id ? loaded.places : undefined;
+  const placeState = stadiumRecords === undefined ? "loading" : stadiumRecords === null ? "failed" : "ready";
+  const places = useMemo(() => stadium && stadiumRecords && (tab === "hotels" || tab === "restaurants")
+    ? listedPlaces(stadium, stadiumRecords, placeKind, radius, category)
+    : [], [stadium, stadiumRecords, tab, placeKind, radius, category]);
+  const totalOfKind = stadiumRecords ? placesOfKind(stadiumRecords, placeKind).length : 0;
+  const resetFilters = () => { setRadius(3); setCategory("all"); };
   // Reset to overview when stadium changes
   useEffect(() => {
     setTab("overview");
@@ -114,7 +130,7 @@ export default function StadiumDetail({
       <div className="px-6 pb-6 pt-3">
         {tab === "overview" && <OverviewTab stadium={stadium} />}
         {tab === "transport" && <DirectionsPanel stadium={stadium} />}
-        {(tab === "hotels" || tab === "restaurants") && <SavedPlacesTab stadiumId={stadium.id} kind={tab === "hotels" ? "hotels" : "eatdrink"} places={places} radius={radius} onRadiusChange={setRadius} category={category} onCategoryChange={setCategory} />}
+        {(tab === "hotels" || tab === "restaurants") && <SavedPlacesTab key={`${stadium.id}-${tab}`} stadium={stadium} kind={placeKind} state={placeState} totalOfKind={totalOfKind} places={places} radius={radius} onRadiusChange={setRadius} category={category} onCategoryChange={setCategory} onReset={resetFilters} />}
         {tab === "fanzones" && <FanZonesTab zones={cityFanzones} />}
       </div>
     </div>
